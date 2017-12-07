@@ -1,0 +1,23 @@
+{
+  "name": "vebture-api-core",
+  "version": "0.1.0",
+  "description": "core system service",
+  "main": "main.js",
+  "scripts": {
+    "start": "node main.js"
+  },
+  "repository": {
+    "git": "git@github.com:venture-api/core.git"
+  },
+  "keywords": [
+    "koa"
+  ],
+  "author": "Max Korinets",
+  "license": "MIT",
+  "dependencies": {
+    "@koa/cors": "^2.2.1",
+    "koa": "^2.4.1",
+    "koa-mount": "^3.0.0",
+    "koa-route": "^3.2.0"
+  }
+}
