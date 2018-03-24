@@ -1,19 +1,16 @@
 {
-  "name": "vebture-api-core",
+  "name": "gate",
   "version": "0.1.0",
-  "description": "core system service",
+  "description": "Venture API HTTP gateway service",
   "main": "main.js",
   "scripts": {
     "start": "node main.js"
   },
   "repository": {
-    "git": "git@github.com:venture-api/core.git"
+    "git": "git@github.com:venture-api/gate.git"
   },
-  "keywords": [
-    "koa"
-  ],
-  "author": "Max Korinets",
-  "license": "MIT",
+  "author": "Maksim Korinets",
+  "license": "UNLICENSED",
   "dependencies": {
     "@koa/cors": "^2.2.1",
     "koa": "^2.4.1",

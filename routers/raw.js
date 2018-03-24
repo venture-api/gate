@@ -1,8 +1,8 @@
 const Koa = require('koa');
 const _ = require('koa-route');
 
-const raw = new Koa();
 
+const raw = new Koa();
 
 // COAL
 
