@@ -1,21 +1,17 @@
-const Koa = require('koa');
-const _ = require('koa-route');
+const {Router} = require('express');
+const authorize = require('../middleware/authorization');
+
+const rawRouter = Router();
 
 
-const raw = new Koa();
+// LIST TEAMS
 
-// COAL
+rawRouter.get('/coal', authorize(), (req, res, next) => {
 
-raw.use(_.get('/coal', (ctx) => {
-    ctx.body = {type: 'raw.coal', id: '615dc7c8-ab26-42c1-a2b4-b3459411cc75'};
-}));
+    const tasu = req.app.get('tasu');
 
-
-// ORES
-
-raw.use(_.get('/ores/iron', (ctx, next) => {
-    ctx.body = {token: 'ISAAXTKN'};
-    next();
-}));
-
-module.exports = raw;
+    tasu.request('team.list', {criteria: {ownerId}, offset, limit}, (error, list) => {
+        res.body = list;
+        next(error);
+    });
+});
