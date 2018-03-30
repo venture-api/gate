@@ -15,6 +15,14 @@ npm i
 ```
 
 
+Run
+---
+
+```
+npm start
+```
+
+
 Credits
 -------
 

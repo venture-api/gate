@@ -3,7 +3,7 @@ const moment = require('moment');
 
 
 const formatter = (options) =>  {
-    return `${options.timestamp()} gateway ${options.level.toUpperCase()} ${options.message || ''} ${options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta) : ''}`;
+    return `${options.timestamp()} gate ${options.level.toUpperCase()} ${options.message || ''} ${options.meta && Object.keys(options.meta).length ? JSON.stringify(options.meta) : ''}`;
 
 };
 
