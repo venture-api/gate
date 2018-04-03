@@ -40,14 +40,14 @@ async function main()  {
 
     const tasu = new Tasu(config.tasu);
     await tasu.connected();
-    app.set('query', tasu);
+    app.set('tasu', tasu);
 
 
     // STAIR
 
-    const stair = new Stair(config.stan);
+    const stair = new Stair(config.stair);
     await stair.connected();
-    app.set('command', stair);
+    app.set('stair', stair);
 
 
     // SERVER LAUNCH

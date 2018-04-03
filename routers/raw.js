@@ -1,23 +1,23 @@
 const {Router} = require('express');
 const resourceId = require('../util/resourceId');
-const getFactory = require('../middleware/getFactory');
+const authorize = require('../middleware/authorization');
 
 
-const rawRouter = Router();
+const rawRouter = Router({});
 
 
 // LIST TEAMS
 
-rawRouter.post('/produce', getFactory(), async (req, res, next) => {
+rawRouter.post('/', authorize('factory'), async (req, res, next) => {
 
     const {type, code} = req.factory;
     const {can, reason, nextTerm} = await canProduce(code);
-    const command = req.app.get('command');
+    const stair = req.app.get('stair');
     let guid;
 
     if (can) {
         const id = resourceId({type, code});
-        guid = await command.write('produce', {
+        guid = await stair.write('produce', {
             type,
             id,
             factoryCode: code
@@ -27,7 +27,7 @@ rawRouter.post('/produce', getFactory(), async (req, res, next) => {
         res.body = {resourceId};
 
     } else {
-        guid = await command.write('waste', {reason, factoryId: id});
+        guid = await stair.write('waste', {reason, factoryId: id});
         res.body = {reason};
     }
     res.set('quid', guid);
