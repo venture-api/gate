@@ -17,8 +17,6 @@ const pack = require('./package.json');
 const app = express();
 app.set('logger', logger);
 
-// ROUTERS AND GENERAL MIDDLEWARE
-
 app.use(morgan(':date[iso] gate INFO request :remote-addr :method :url :status :response-time ms'));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -47,6 +45,12 @@ module.exports = async () => {
     const stair = new Stair(config.stair);
     await stair.connected();
     app.set('stair', stair);
+
+
+    // HTTP SERVER
+
+    const server = http.createServer(app);
+    app.set('server', server);
 
     return app;
 };

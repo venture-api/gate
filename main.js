@@ -1,11 +1,10 @@
-const http = require('http');
 const appReady = require('./app');
 
 
 async function main()  {
 
     const app = await appReady();
-    const server = http.createServer(app);
+    const server = app.get('server');
     const pack = app.get('package');
     const config = app.get('config');
 

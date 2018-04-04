@@ -22,6 +22,8 @@
     "jsonwebtoken": "^8.2.0",
     "moment": "^2.22.0",
     "morgan": "^1.9.0",
+    "nyc": "^11.6.0",
+    "request-promise-native": "^1.0.5",
     "shortid": "^2.2.8",
     "stair": "^0.2.2",
     "tasu": "^4.0.2",
