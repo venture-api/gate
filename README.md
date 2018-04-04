@@ -5,6 +5,9 @@ Gate
 
 Venture API HTTP gateway service
 
+[![Build Status](https://travis-ci.org/venture-api/gate.svg?branch=master)](https://travis-ci.org/venture-api/gate)
+[![Coverage Status](https://coveralls.io/repos/github/venture-api/gate/badge.svg?branch=master)](https://coveralls.io/github/venture-api/gate?branch=master)
+
 
 Install
 -------
