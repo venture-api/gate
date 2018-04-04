@@ -22,6 +22,8 @@ Run
 ---
 
 ```
+npm run nats
+npm run stair
 npm start
 ```
 
