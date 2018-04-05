@@ -1,7 +1,7 @@
 module.exports = (tasu) => {
 
     tasu.listen('mold.status', () => {
-        return {status: 'ok'}
+        return {status: 'ok', id: 'MOLD-001'}
     });
 
 };

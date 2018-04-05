@@ -34,8 +34,17 @@ describe('routes', () => {
     describe('/status', () => {
 
         it('responds OK', async () => {
-            const res = await request.get(`${entrypoint}/status`);
-            assert.equal(res, '{"mold":{"status":"ok"}}');
+            const body = await request.get(`${entrypoint}/status`);
+            assert.equal(body, '{"mold":{"status":"ok","id":"MOLD-001"}}');
+        });
+
+    });
+
+    describe('/auth/:service', () => {
+
+        it('responds with mock strategy', async () => {
+            const body = await request.get(`${entrypoint}/auth/mock`, {json: true});
+            assert.equal(body.redirect_uri, `${entrypoint}/auth/mock/callback`);
         });
 
     })
