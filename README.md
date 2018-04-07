@@ -1,8 +1,6 @@
 Gate
 ====
 
-![icon]
-
 ⛖ Venture API HTTP gateway service.
 
 [![Build Status](https://travis-ci.org/venture-api/gate.svg?branch=master)](https://travis-ci.org/venture-api/gate)
