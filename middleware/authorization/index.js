@@ -6,6 +6,7 @@ const ReqError = require('../../util/ReqError');
 module.exports = (moduleName) => {
 
     const authorize = require(`./${moduleName}.js`);
+    const verify = promisify(jwt.verify);
 
     return async (req, res, next) => {
 
@@ -17,7 +18,6 @@ module.exports = (moduleName) => {
             throw new ReqError(400, 'authorization token missing');
 
         const {jwt: {secret}} = req.app.get('config');
-        const verify = promisify(jwt.verify);
         req.tokenPayload = await verify(token, secret);
 
 

@@ -9,40 +9,29 @@ class MockOAuthStrategy extends Strategy {
         super(options, verify);
         this.name = 'mock';
         this.passAuthentication = options.passAuthentication || true;
-        this.userId = 'MOCK-USR-001';
+        this.userId = options.userId || 1;
         this.verify = verify;
     };
 
-    // authenticate(req) {
-    //
-    //     if (this.passAuthentication) {
-    //         const user = {id: this.userId};
-    //         const self = this;
-    //         this.verify(user, function(error, resident) {
-    //             if (error) {
-    //                 self.fail(error);
-    //             } else {
-    //                 self.success(resident);
-    //             }
-    //         });
-    //     } else {
-    //         this.fail('Unauthorized');
-    //     }
-    //
-    // };
+    userProfile(accessToken, done) {
+        return done(null, {emails: [{value: "mock@user.com"}]})
+    };
 
 }
+
 
 module.exports = ({host, port}) => {
 
     const entrypoint = `http://${host}:${port}`;
 
     return new MockOAuthStrategy({
+
         authorizationURL: `${entrypoint}/mockOAuth/auth`,
         tokenURL: `${entrypoint}/mockOAuth/token`,
         clientID: 'MOCKCLIENTID',
         clientSecret: 'MOCKCLIENTSECRET',
         scope: ['user:email','repo', 'write:repo_hook'],
         profileFields: ['id', 'displayName', 'email']
+
     }, fedCallback);
 };

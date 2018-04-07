@@ -1,4 +1,5 @@
 const {assert} = require('chai');
+const nock = require('nock');
 const request = require('request-promise-native');
 const appReady = require('../app');
 const TasuMock = require('./tasuMock');
@@ -42,9 +43,18 @@ describe('routes', () => {
 
     describe('/auth/:service', () => {
 
-        it('responds with mock strategy', async () => {
-            const body = await request.get(`${entrypoint}/auth/mock`, {json: true});
-            assert.equal(body.redirect_uri, `${entrypoint}/auth/mock/callback`);
+        it('responds via mock strategy', async () => {
+            nock('http://localhost:3000')
+                .get('/login')
+                .query(true)
+                .reply(200);
+            stair.read('player.register', ({email}) => {
+                assert.equal(email, 'mock@user.com');
+            });
+            const res = await request.get(`${entrypoint}/auth/mock`, {
+                resolveWithFullResponse: true
+            });
+            assert.include(res.request.uri.path, '/login?token=eyJ');
         });
 
     })
