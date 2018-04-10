@@ -1,12 +1,12 @@
 {
-  "name": "gate",
+  "name": "@venture-api/gate",
   "version": "0.1.0",
-  "description": "Venture API HTTP gateway service",
+  "description": "⛖ Venture API HTTP gateway service",
   "main": "main.js",
   "private": true,
   "scripts": {
     "start": "node main.js",
-    "test": "export NODE_ENV=test &&mocha test",
+    "test": "export NODE_ENV=test && mocha test",
     "nats": "export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && gnatsd -DV",
     "stan": "export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && nats-streaming-server -p 4223 -DV"
   },
