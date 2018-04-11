@@ -1,4 +1,4 @@
 [0.2.0]
 -------
-- [ ] Add player registration #4
-- [ ] Add tests
+- [x] Add player auth/registration via google #4
+- [x] Add tests

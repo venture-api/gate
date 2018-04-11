@@ -38,7 +38,8 @@ authRouter.get('/:authService/callback', validate('authService'), (req, res, nex
 
         return passport.authenticate(authService, {
             session: false,
-            callbackURL: `${scheme}://${host}:${port}/auth/${authService}/callback` })(req, res, next);
+            callbackURL: `${scheme}://${host}:${port}/auth/${authService}/callback`
+        })(req, res, next);
 
     },
 
