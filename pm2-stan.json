@@ -3,7 +3,7 @@
     {
       "name": "📜 stan",
       "script": "nats-streaming-server",
-      "args": "-p 4223 -DV",
+      "args": "-p 4223",
       "exec_mode": "fork"
     }
   ]

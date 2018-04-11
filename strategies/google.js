@@ -10,8 +10,7 @@ module.exports = (googleConfig) => {
 
         clientID,
         clientSecret,
-        scope: ['email', 'profile', 'https://www.googleapis.com/auth/drive'],
-        accessType: 'offline',
+        scope: ['email', 'profile'],
         approvalPrompt: 'force'
 
     }, fedCallback);

@@ -48,8 +48,9 @@ describe('routes', () => {
                 .get('/login')
                 .query(true)
                 .reply(200);
-            stair.read('player.register', ({email}) => {
+            stair.read('player.register', ({id, email}) => {
                 assert.equal(email, 'mock@user.com');
+                assert.isOk(id);
             });
             const res = await request.get(`${entrypoint}/auth/mock`, {
                 resolveWithFullResponse: true

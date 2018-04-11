@@ -1,10 +1,11 @@
 const {Router} = require('express');
 const ReqError = require('../util/ReqError');
 const issueJWT = require('../util/issueJWT');
+const playerId = require('../util/playerId');
 const validate = require('../middleware/validation');
 
 
-const authRouter = Router();
+const authRouter = Router({});
 
 
 // INITIAL CALL
@@ -30,11 +31,14 @@ authRouter.get('/:authService/callback', validate('authService'), (req, res, nex
 
         const logger = req.app.get('logger');
         const passport = req.app.get('passport');
+        const {scheme, host, port} = req.app.get('config');
         const {authService} = req.params;
 
         logger.debug(`returning ${authService} callback`);
 
-        return passport.authenticate(authService, {session: false})(req, res, next);
+        return passport.authenticate(authService, {
+            session: false,
+            callbackURL: `${scheme}://${host}:${port}/auth/${authService}/callback` })(req, res, next);
 
     },
 
@@ -48,8 +52,8 @@ authRouter.get('/:authService/callback', validate('authService'), (req, res, nex
         const {authService} = req.params;
 
         logger.debug(`processing ${authService} authentication callback`);
-        const {accessToken, refreshToken, profile} = req.user;
-        const {id, displayName, username, emails} = profile;
+        const {profile} = req.user;
+        const {displayName, username, emails} = profile;
         const name = displayName || username;
         const email = emails[0].value;
 
@@ -64,8 +68,9 @@ authRouter.get('/:authService/callback', validate('authService'), (req, res, nex
         if (player) {
             logger.debug('existing player, issuing token', player);
         } else {
-            logger.debug('new player, registering', player);
-            guid = stair.write('player.register', {email, name});
+            logger.debug('new player, registering', email);
+            const id = playerId();
+            guid = stair.write('player.register', {id, email, name});
         }
         const {frontend: {entrypoint}, jwt: {secret}} = config;
         const jwt = await issueJWT({g: guid, e: email}, secret);
