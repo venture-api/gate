@@ -1,14 +1,15 @@
 const assert = require('assert');
 const ReqError = require('../../util/ReqError');
-const commonFields = require('./commonFields');
+const schemata = require('./schemata');
 
 
 module.exports = (...params) => {
 
     const schema = {};
     params.map((param) => {
-        schema[param] = commonFields[param];
-        assert(schema[param], `no validation schema for '${param}'`);
+        const [module, fieldName] = param.split(':');
+        schema[fieldName] = schemata[param];
+        assert(schema[fieldName], `no validation schema for '${param}'`);
     });
 
     return async (req, res, next) => {

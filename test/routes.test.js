@@ -54,6 +54,7 @@ describe('routes', () => {
             stair.read('player.register', ({id, name, email}) => {
                 assert.equal(email, playerOne.email);
                 assert.isOk(id);
+                playerOne.id = id;
                 assert.equal(name, playerOne.name);
             });
             const res = await request.get(`${entrypoint}/auth/mock`, {
@@ -70,23 +71,27 @@ describe('routes', () => {
         describe('POST', () => {
 
             it('creates a new factory', async () => {
-                stair.read('factory.create', ({id, name, code, type}) => {
+                stair.read('factory.create', ({id, name, code, type, ownerId}) => {
                     assert.equal(name, factoryOne.name);
                     assert.equal(code, factoryOne.code);
                     assert.equal(type, factoryOne.type);
+                    assert.equal(ownerId, playerOne.id);
                     assert.isOk(id);
                 });
-                const newFactory = await request.post(`${entrypoint}/factories`, {
+                const res = await request.post(`${entrypoint}/factories`, {
                     json: factoryOne,
                     headers: {
                         'Authorization': `Bearer ${playerJWT}`
                     },
                     resolveWithFullResponse: true
                 });
+                const newFactory = res.body;
                 assert.equal(newFactory.name, factoryOne.name);
                 assert.equal(newFactory.code, factoryOne.code);
                 assert.equal(newFactory.type, factoryOne.type);
+                assert.equal(newFactory.ownerId, playerOne.id);
                 assert.isOk(newFactory.id);
+                assert.isOk(res.headers['x-guid']);
             })
 
         });

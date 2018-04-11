@@ -10,35 +10,36 @@ const authRouter = Router({});
 
 // INITIAL CALL
 
-authRouter.get('/:authService', validate('authService'), (req, res, next) => {
+authRouter.get('/:service', validate('auth:service'), (req, res, next) => {
 
     const {environment, scheme, host, port} = req.app.get('config');
     const logger = req.app.get('logger');
     const passport = req.app.get('passport');
-    const {authService} = req.params;
-    if (authService === 'mock' && environment !== 'test')
+    const {service} = req.params;
+    if (service === 'mock' && environment !== 'test')
         return next(new Error('mock service is only allowed in test environment'));
-    logger.debug(`processing ${authService} initial auth call`);
-    return passport.authenticate(authService, {
-        callbackURL: `${scheme}://${host}:${port}/auth/${authService}/callback`})(req, res, next);
+    logger.debug(`processing ${service} initial auth call`);
+    return passport.authenticate(service, {
+        callbackURL: `${scheme}://${host}:${port}/auth/${service}/callback`
+    })(req, res, next);
 
 });
 
 
 // CALLBACK
 
-authRouter.get('/:authService/callback', validate('authService'), (req, res, next) => {
+authRouter.get('/:service/callback', validate('auth:service'), (req, res, next) => {
 
         const logger = req.app.get('logger');
         const passport = req.app.get('passport');
         const {scheme, host, port} = req.app.get('config');
-        const {authService} = req.params;
+        const {service} = req.params;
 
-        logger.debug(`returning ${authService} callback`);
+        logger.debug(`returning ${service} callback`);
 
-        return passport.authenticate(authService, {
+        return passport.authenticate(service, {
             session: false,
-            callbackURL: `${scheme}://${host}:${port}/auth/${authService}/callback`
+            callbackURL: `${scheme}://${host}:${port}/auth/${service}/callback`
         })(req, res, next);
 
     },
