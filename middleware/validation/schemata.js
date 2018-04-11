@@ -1,6 +1,6 @@
 module.exports = {
 
-    authService: {
+    'auth:service': {
         isIn: {
             options: [['google', 'mock']],
             errorMessage: 'authentication service unknown'

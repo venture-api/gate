@@ -18,12 +18,10 @@ factoryRouter.post('/',
         const stair = req.app.get('stair');
         const {name, type, code} = req.body;
         const id = factoryId({type, code});
-        const guid = await stair.write('factory.create', {
-            id,
-            name,
-            ownerId
-        });
-        res.body = {guid};
+        const newFactory = {id, name, ownerId, type, code};
+        const guid = await stair.write('factory.create', newFactory);
+        res.body = newFactory;
+        res.set('x-guid', guid);
         res.status(201);
         next();
     });

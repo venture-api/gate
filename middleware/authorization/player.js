@@ -10,6 +10,6 @@ module.exports = async (req) => {
     logger.debug('authorizing player');
     const tasu = req.app.get('tasu');
     const player = await tasu.request('player.get', {id});
-    logger.debug('player authenticated:', req.player.id);
+    logger.debug('player authenticated:', player.id);
     return player;
 };
