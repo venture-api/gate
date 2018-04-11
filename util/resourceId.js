@@ -1,5 +1,5 @@
 const shortId = require('shortid');
-const RES_TYPE_MAP = require('./resourceTypeMap');
+const RES_TYPE_MAP = require('./resourceAbbrMap');
 
 
 module.exports = ({type, code}) => {
