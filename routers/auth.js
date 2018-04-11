@@ -64,17 +64,20 @@ authRouter.get('/:authService/callback', validate('authService'), (req, res, nex
         if (!email)
             throw new ReqError(400, 'no email in profile');
 
-        let guid;
-        const player = await tasu.request('player.identify', {email});
-        if (player) {
-            logger.debug('existing player, issuing token', player);
+        const existingPlayer = await tasu.request('player.identify', {email});
+        let player;
+        if (existingPlayer) {
+            logger.debug('existing player, issuing token', existingPlayer);
+            player = existingPlayer;
         } else {
             logger.debug('new player, registering', email);
             const id = playerId();
-            guid = stair.write('player.register', {id, email, name});
+            player = {id, email, name};
+            await stair.write('player.register', player);
         }
         const {frontend: {entrypoint}, jwt: {secret}} = config;
-        const jwt = await issueJWT({g: guid, e: email}, secret);
+
+        const jwt = await issueJWT({t: 'player', i: player.id}, secret);
         res.redirect(`${entrypoint}/login?token=${jwt}`);
     },
 

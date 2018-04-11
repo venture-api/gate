@@ -1,5 +1,6 @@
 const {Strategy} = require('passport-oauth2');
 const fedCallback = require('../util/fedCallback');
+const {playerOne} = require('../test/fixtures');
 
 
 class MockOAuthStrategy extends Strategy {
@@ -14,7 +15,10 @@ class MockOAuthStrategy extends Strategy {
     };
 
     userProfile(accessToken, done) {
-        return done(null, {emails: [{value: "mock@user.com"}]})
+        return done(null, {
+            emails: [{value: playerOne.email}],
+            displayName: playerOne.name
+        })
     };
 
 }

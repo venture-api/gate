@@ -1,5 +1,4 @@
 const {Router} = require('express');
-const request = require('request-promise-native');
 const ReqError = require('../util/ReqError');
 
 
@@ -8,7 +7,7 @@ const mockOAuthRouter = Router({});
 
 mockOAuthRouter.get('/auth', async (req, res, next) => {
 
-    const {response_type, redirect_uri, scope, client_id} = req.query;
+    const {redirect_uri, scope, client_id} = req.query;
     const {scheme, host, port} = req.app.get('config');
     const logger = req.app.get('logger');
     logger.debug('authenticating', client_id, redirect_uri);
@@ -17,7 +16,6 @@ mockOAuthRouter.get('/auth', async (req, res, next) => {
         throw new ReqError(400, 'bad redirect_uri');
     if (client_id !== 'MOCKCLIENTID')
         throw new ReqError(400, 'bad client id');
-    // await request.get(redirect_uri, {qs: {access_token: 'TKN001'}});
     res.redirect(`${redirect_uri}?code=AUTHORZTN_CODE&scope=${scope}`);
     next();
 });
