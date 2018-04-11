@@ -1,21 +1,37 @@
-const Koa = require('koa');
-const _ = require('koa-route');
+const {Router} = require('express');
+const resourceId = require('../util/resourceId');
+const authorize = require('../middleware/authorization');
 
 
-const raw = new Koa();
-
-// COAL
-
-raw.use(_.get('/coal', (ctx) => {
-    ctx.body = {type: 'raw.coal', id: '615dc7c8-ab26-42c1-a2b4-b3459411cc75'};
-}));
+const rawRouter = Router({});
 
 
-// ORES
+// LIST TEAMS
 
-raw.use(_.get('/ores/iron', (ctx, next) => {
-    ctx.body = {token: 'ISAAXTKN'};
+rawRouter.post('/', authorize('factory'), async (req, res, next) => {
+
+    const {type, code} = req.factory;
+    const {can, reason, nextTerm} = await canProduce(code);
+    const stair = req.app.get('stair');
+    let guid;
+
+    if (can) {
+        const id = resourceId({type, code});
+        guid = await stair.write('produce', {
+            type,
+            id,
+            factoryCode: code
+        });
+        res.status(201);
+        res.set('next', nextTerm);
+        res.body = {resourceId};
+
+    } else {
+        guid = await stair.write('waste', {reason, factoryId: id});
+        res.body = {reason};
+    }
+    res.set('quid', guid);
     next();
-}));
+});
 
-module.exports = raw;
+module.exports = rawRouter;

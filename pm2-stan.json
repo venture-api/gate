@@ -1,0 +1,10 @@
+{
+  "apps" : [
+    {
+      "name": "📜 stan",
+      "script": "nats-streaming-server",
+      "args": "-p 4223",
+      "exec_mode": "fork"
+    }
+  ]
+}

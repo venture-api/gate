@@ -1,20 +1,24 @@
-const Koa = require('koa');
-const cors = require('@koa/cors');
-const mount = require('koa-mount');
-const raw = require('./routers/raw');
-
-const core = new Koa();
-
-core
-    .use(cors({
-        origin: 'http://localhost:3000',
-        allowMethods: 'POST'
-    }));
+const appReady = require('./app');
 
 
-// ROUTERS
+async function main()  {
 
-core.use(mount('/raw', raw));
+    const app = await appReady();
+    const server = app.get('server');
+    const pack = app.get('package');
+    const config = app.get('config');
 
 
-core.listen(8000);
+    // SERVER LAUNCH
+
+    server.listen(config.port, () => {
+        console.log(` `);
+        console.log(`*********************************************************************`);
+        console.log(` ⛖ ${pack.name}@${pack.version} listening on ${config.host}:${config.port} [${config.environment}]`);
+        console.log(`*********************************************************************`);
+        console.log(` `);
+    });
+
+}
+
+main();
