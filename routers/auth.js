@@ -35,7 +35,7 @@ authRouter.get('/:service/callback', validate('auth:service'), (req, res, next) 
         const {scheme, host, port} = req.app.get('config');
         const {service} = req.params;
 
-        logger.debug(`returning ${service} callback`);
+        logger.debug(`returning '${service}' callback`);
 
         return passport.authenticate(service, {
             session: false,
@@ -51,9 +51,9 @@ authRouter.get('/:service/callback', validate('auth:service'), (req, res, next) 
 
         const logger = req.app.get('logger');
         const stair = req.app.get('stair');
-        const {authService} = req.params;
+        const {service} = req.params;
 
-        logger.debug(`processing ${authService} authentication callback`);
+        logger.debug(`processing '${service}' authentication callback`);
         const {profile} = req.user;
         const {displayName, username, emails} = profile;
         const name = displayName || username;

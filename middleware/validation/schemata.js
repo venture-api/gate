@@ -18,6 +18,16 @@ module.exports = {
         isLength: {
             options: [{min: 3, max: 6}],
             errorMessage: 'bad factory code'
+        },
+        custom: {
+            options: async (code, {req}) => {
+                const tasu = req.app.get('tasu');
+                const logger = req.app.get('logger');
+                logger.debug('validating factory code', code);
+                const factory = await tasu.request('factory.get', {code});
+                return !factory;
+            },
+            errorMessage: 'code is not unique'
         }
     },
 
