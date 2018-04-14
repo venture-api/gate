@@ -1,4 +1,3 @@
-const assert = require('assert');
 const jwt = require('jsonwebtoken');
 const {promisify} = require('util');
 const ReqError = require('../../util/ReqError');
@@ -15,7 +14,6 @@ const ACTION_MAP = {
 
 module.exports = (moduleName) => {
 
-    const authenticate = require(`./${moduleName}.js`);
     const verify = promisify(jwt.verify);
 
     return async (req, res, next) => {
@@ -31,13 +29,18 @@ module.exports = (moduleName) => {
             throw new ReqError(400, 'no authorization token');
         const {jwt: {secret}} = app.get('config');
         logger.debug('verifying token', token);
-        const tokenPayload = await verify(token, secret);
+        let tokenPayload;
+        try {
+            tokenPayload = await verify(token, secret);
+        } catch (error) {
+            throw new ReqError(400, 'token verification failed', error.message);
+        }
         logger.debug('payload verified:', tokenPayload);
         const {t: type, i: id} = tokenPayload;
         if (!type || type !== moduleName)
             throw new ReqError(400, `wrong token type '${type}' for module '${moduleName}'`);
         if (!id)
-            throw new ReqError(400, 'id missing in token payload');
+            throw new ReqError(400, 'no id in token payload');
 
 
         // authenticate
