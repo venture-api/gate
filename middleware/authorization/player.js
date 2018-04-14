@@ -1,15 +1,13 @@
 const ReqError = require('../../util/ReqError');
 
 
-module.exports = async (req) => {
+module.exports = async ({tokenPayload, method, app}) => {
 
-    const {i: id} = req.tokenPayload;
+    const {i: id} = tokenPayload;
     if (!id)
         throw new ReqError(400, 'player id missing in token payload');
-    const logger = req.app.get('logger');
+    const logger = app.get('logger');
     logger.debug('authorizing player');
-    const tasu = req.app.get('tasu');
-    const player = await tasu.request('player.get', {id});
-    logger.debug('player authenticated:', player.id);
-    return player;
+    const tasu = app.get('tasu');
+    return await tasu.request('player.get', {id});
 };

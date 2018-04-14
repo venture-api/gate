@@ -24,4 +24,9 @@ module.exports = (tasu) => {
         if (code === factoryOne.code) return null;
     });
 
+    tasu.listen('acl.get', (accessRecord) => {
+        assert(accessRecord);
+        return true;
+    });
+
 };

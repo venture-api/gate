@@ -1,13 +1,13 @@
 const ReqError = require('../../util/ReqError');
 
 
-module.exports = async (req) => {
+module.exports = async ({tokenPayload, app}) => {
 
-    const {c: code} = req.tokenPayload;
-    if (!code)
-        throw new ReqError(400, 'factory code is missing in token payload');
-    const logger = req.app.get('logger');
+    const {i: id} = tokenPayload;
+    if (!id)
+        throw new ReqError(400, 'factory id is missing in token payload');
+    const logger = app.get('logger');
     logger.debug('authorizing factory');
-    const tasu = req.app.get('tasu');
-    req.factory = await tasu.request('factory.get', {code});
+    const tasu = app.get('tasu');
+    return await tasu.request('factory.get', {id});
 };
