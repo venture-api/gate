@@ -1,6 +1,7 @@
 const assert = require('assert');
-const ReqError = require('../../util/ReqError');
+const {checkSchema, validationResult} = require('express-validator/check');
 const schemata = require('./schemata');
+const ReqError = require('../../util/ReqError');
 
 
 module.exports = (...params) => {
@@ -12,16 +13,14 @@ module.exports = (...params) => {
         assert(schema[fieldName], `no validation schema for '${param}'`);
     });
 
-    return async (req, res, next) => {
+    return [checkSchema(schema), (req, res, next) => {
 
-        const logger = req.app.get('logger');
-        logger.debug('validating', ...params);
-        req.check(schema);
-        const validationErrors = req.validationErrors();
-        if (validationErrors) {
-            logger.debug('got validation error', validationErrors);
-            throw new ReqError(422, 'validation error', validationErrors);
+        const result = validationResult(req);
+        if (!result.isEmpty()) {
+            const logger = req.app.get('logger');
+            logger.debug('got validation error', result.mapped());
+            throw new ReqError(422, 'validation error', result.mapped());
         }
-        next()
-    }
+        next();
+    }]
 };

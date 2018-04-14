@@ -1,4 +1,7 @@
 const {Router} = require('express');
+const {matchedData} = require('express-validator/filter')
+const {validationResult} = require('express-validator/check');
+
 const authorize = require('../middleware/authorization');
 const validate = require('../middleware/validation');
 const factoryId = require('../util/factoryId');
@@ -13,10 +16,9 @@ factoryRouter.post('/',
     authorize('player'),
     validate('factory:name', 'factory:type', 'factory:code'),
     async (req, res, next) => {
-
         const {id: ownerId} = req.player;
         const stair = req.app.get('stair');
-        const {name, type, code} = req.body;
+        const {name, type, code} = matchedData(req, {locations: ['body']});
         const id = factoryId({type, code});
         const newFactory = {id, name, ownerId, type, code};
         const guid = await stair.write('factory.create', newFactory);

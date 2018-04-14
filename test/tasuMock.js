@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {playerOne} = require('./fixtures');
+const {playerOne, factoryOne} = require('./fixtures');
 
 
 module.exports = (tasu) => {
@@ -17,6 +17,11 @@ module.exports = (tasu) => {
         assert(id);
         playerOne.id = id;
         return playerOne;
+    });
+
+    tasu.listen('factory.get', ({code}) => {
+        assert(code);
+        if (code === factoryOne.code) return null;
     });
 
 };

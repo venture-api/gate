@@ -51,7 +51,7 @@ describe('routes', () => {
                 .get('/login')
                 .query(true)
                 .reply(200);
-            stair.read('player.register', ({id, name, email}) => {
+            await stair.read('player.register', ({id, name, email}) => {
                 assert.equal(email, playerOne.email);
                 assert.isOk(id);
                 playerOne.id = id;
@@ -71,11 +71,12 @@ describe('routes', () => {
         describe('POST', () => {
 
             it('creates a new factory', async () => {
-                stair.read('factory.create', ({id, name, code, type, ownerId}) => {
+                await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
                     assert.equal(name, factoryOne.name);
                     assert.equal(code, factoryOne.code);
                     assert.equal(type, factoryOne.type);
                     assert.equal(ownerId, playerOne.id);
+                    factoryOne.id = id;
                     assert.isOk(id);
                 });
                 const res = await request.post(`${entrypoint}/factories`, {
@@ -90,7 +91,7 @@ describe('routes', () => {
                 assert.equal(newFactory.code, factoryOne.code);
                 assert.equal(newFactory.type, factoryOne.type);
                 assert.equal(newFactory.ownerId, playerOne.id);
-                assert.isOk(newFactory.id);
+                assert.equal(newFactory.id, factoryOne.id);
                 assert.isOk(res.headers['x-guid']);
             })
 
