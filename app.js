@@ -5,7 +5,6 @@ const bearerToken = require('express-bearer-token');
 const passport = require('passport');
 require('express-async-errors');
 const morgan = require('morgan');
-const expressValidator = require('express-validator');
 const Tasu = require('tasu');
 const Stair = require('stair');
 const configLoader = require('yt-config');
@@ -26,7 +25,6 @@ app.use(morgan(':date[iso] gate INFO request :remote-addr :method :url :status :
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bearerToken());
-app.use(expressValidator());
 app.use(routers);
 app.use(errorHandler);
 app.use(responseSender);

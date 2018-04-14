@@ -1,5 +1,10 @@
 const {Router} = require('express');
+const {matchedData} = require('express-validator/filter')
+const {validationResult} = require('express-validator/check');
+
 const authorize = require('../middleware/authorization');
+const validate = require('../middleware/validation');
+const factoryId = require('../util/factoryId');
 
 
 const factoryRouter = Router({});
@@ -7,18 +12,20 @@ const factoryRouter = Router({});
 
 // CREATE
 
-factoryRouter.post('/', authorize('user'), async (req, res, next) => {
-
-    const {id: ownerId} = req.player;
-    const stair = req.app.get('stair');
-    const {name} = req.body;
-    const guid = await stair.write('factory.create', {
-        name,
-        ownerId
+factoryRouter.post('/',
+    authorize('player'),
+    validate('factory:name', 'factory:type', 'factory:code'),
+    async (req, res, next) => {
+        const {id: ownerId} = req.player;
+        const stair = req.app.get('stair');
+        const {name, type, code} = matchedData(req, {locations: ['body']});
+        const id = factoryId({type, code});
+        const newFactory = {id, name, ownerId, type, code};
+        const guid = await stair.write('factory.create', newFactory);
+        res.body = newFactory;
+        res.set('x-guid', guid);
+        res.status(201);
+        next();
     });
-    res.body = {guid};
-    res.status(201);
-    next();
-});
 
 module.exports = factoryRouter;

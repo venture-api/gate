@@ -32,7 +32,7 @@
     "passport-oauth2": "^1.4.0",
     "request-promise-native": "^1.0.5",
     "shortid": "^2.2.8",
-    "stair": "^0.3.1",
+    "stair": "^0.4.0",
     "tasu": "^4.1.0",
     "winston": "^2.4.1",
     "yt-config": "^2.0.2"
