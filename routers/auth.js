@@ -1,7 +1,6 @@
 const {Router} = require('express');
 const ReqError = require('../util/ReqError');
 const issueJWT = require('../util/issueJWT');
-const playerId = require('../util/playerId');
 const validate = require('../middleware/validation');
 
 
@@ -72,7 +71,7 @@ authRouter.get('/:service/callback', validate('auth:service'), (req, res, next) 
             player = existingPlayer;
         } else {
             logger.debug('new player, registering', email);
-            const id = playerId();
+            const id = await tasu.request('player.id', {});
             player = {id, email, name};
             await stair.write('player.register', player);
         }
