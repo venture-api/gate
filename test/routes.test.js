@@ -4,7 +4,7 @@ const request = require('request-promise-native');
 const qs = require('querystring');
 const appReady = require('../app');
 const TasuMock = require('./tasuMock');
-const {playerOne, factoryOne} = require('./fixtures');
+const {playerOne, factoryOne, resourceOne_} = require('./fixtures');
 
 
 let tasu;
@@ -12,6 +12,7 @@ let stair;
 let entrypoint;
 let server;
 let playerJWT;
+let factoryJWT;
 
 describe('routes', () => {
 
@@ -86,12 +87,44 @@ describe('routes', () => {
                     },
                     resolveWithFullResponse: true
                 });
-                const newFactory = res.body;
-                assert.equal(newFactory.name, factoryOne.name);
-                assert.equal(newFactory.code, factoryOne.code);
-                assert.equal(newFactory.type, factoryOne.type);
-                assert.equal(newFactory.ownerId, playerOne.id);
-                assert.equal(newFactory.id, factoryOne.id);
+                const {name, code, type, ownerId, id} = res.body;
+                assert.equal(name, factoryOne.name);
+                assert.equal(code, factoryOne.code);
+                assert.equal(type, factoryOne.type);
+                assert.equal(ownerId, playerOne.id);
+                assert.equal(id, factoryOne.id);
+                assert.isOk(res.headers['x-guid']);
+                factoryJWT = res.headers['x-token'];
+                assert.isOk(factoryJWT);
+            })
+
+        });
+
+    });
+
+    describe('/resources', () => {
+
+        describe('POST', () => {
+
+            it('creates a new resource', async () => {
+                await stair.read('resource.create', ({id, location, units, defects, ownerId}) => {
+                    assert.equal(location, factoryOne.id);
+                    assert.equal(defects, resourceOne_.defects);
+                    assert.equal(ownerId, playerOne.id);
+                    resourceOne_.id = id;
+                    assert.isOk(id);
+                });
+                const res = await request.post(`${entrypoint}/resources`, {
+                    headers: {
+                        'Authorization': `Bearer ${factoryJWT}`
+                    },
+                    resolveWithFullResponse: true
+                });
+                const {id, location, defects, ownerId} = res.body;
+                assert.equal(id, factoryOne.id);
+                assert.equal(location, factoryOne.id);
+                assert.equal(defects.length, 2);
+                assert.equal(ownerId, playerOne.id);
                 assert.isOk(res.headers['x-guid']);
             })
 

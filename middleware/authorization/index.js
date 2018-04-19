@@ -10,8 +10,6 @@ const ACTION_MAP = {
     delete: 'delete'
 };
 
-
-
 module.exports = (moduleName) => {
 
     const verify = promisify(jwt.verify);
@@ -54,12 +52,12 @@ module.exports = (moduleName) => {
         // authorize
 
         logger.debug('authorizing principal action');
-        const accessRecord = {
-            id: principal.id,
-            do: ACTION_MAP[method.toLowerCase()],
-            to: baseUrl
-        };
-        const can = await tasu.request('acl.get', accessRecord);
+        const accessRecord = [
+            principal.id,
+            ACTION_MAP[method.toLowerCase()],
+            baseUrl
+        ];
+        const can = await tasu.request('acl.can', accessRecord);
         if (!can)
             throw new ReqError(403, 'authorization failed', accessRecord);
         next();

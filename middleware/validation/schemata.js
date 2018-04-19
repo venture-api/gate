@@ -24,7 +24,7 @@ module.exports = {
                 const tasu = req.app.get('tasu');
                 const logger = req.app.get('logger');
                 logger.debug('validating factory code', code);
-                const factory = await tasu.request('factory.get', {code});
+                const factory = await tasu.request('factory.identify', {code});
                 return !factory;
             },
             errorMessage: 'code is not unique'
@@ -33,7 +33,7 @@ module.exports = {
 
     'factory:type': {
         isIn: {
-            options: [['ore', 'coal']],
+            options: [['iron ore', 'coal']],
             errorMessage: 'bad factory type'
         }
     },
