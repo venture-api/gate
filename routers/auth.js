@@ -15,7 +15,7 @@ authRouter.get('/:service', validate('auth:service'), (req, res, next) => {
     const logger = req.app.get('logger');
     const passport = req.app.get('passport');
     const {service} = req.params;
-    if (service === 'mock' && ['test', 'ci'].includes(environment))
+    if (service === 'mock' && !['test', 'ci'].includes(environment))
         return next(new Error('mock service is only allowed in test environment'));
     logger.debug(`processing ${service} initial auth call`);
     return passport.authenticate(service, {
