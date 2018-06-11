@@ -2,22 +2,23 @@ const {Router} = require('express');
 const authorize = require('../middleware/authorization');
 
 
-const factoryRouter = Router({});
+const resourseRouter = Router({});
 
 
 // CREATE
 
-factoryRouter.post('/',
-    authorize('factory'),
-    async (req, res, next) => {
+resourseRouter.post('/', authorize('factory'), async (req, res, next) => {
 
         const {factory, app} = req;
         const {type, code, ownerId, region} = factory;
         const stair = app.get('stair');
         const tasu = app.get('tasu');
 
+        // generate resource ID
         const id = await tasu.request('resource.id', {type, code});
-        const defects = await tasu.request('defects.get', {region, type});
+
+        // get region for defects
+        const {defects} = await tasu.request('region.get', {name: region});
         const newResource = {
             id,
             ownerId,
@@ -33,4 +34,4 @@ factoryRouter.post('/',
         next();
     });
 
-module.exports = factoryRouter;
+module.exports = resourseRouter;
