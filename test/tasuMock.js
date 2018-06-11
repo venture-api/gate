@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {playerOne, factoryOne} = require('./fixtures');
+const {players: {bonner}, factories: {rdrn}, regions} = require('@venture-api/fixtures');
 
 
 module.exports = (tasu) => {
@@ -15,18 +15,23 @@ module.exports = (tasu) => {
 
     tasu.listen('player.get', ({id}) => {
         assert(id);
-        playerOne.id = id;
-        return playerOne;
+        bonner.id = id;
+        return bonner;
     });
 
     tasu.listen('factory.get', ({id}) => {
         assert(id);
-        if (id === factoryOne.id) return factoryOne;
+        if (id === rdrn.id) return rdrn;
+    });
+
+    tasu.listen('region.get', ({name}) => {
+        assert(name);
+        return regions[name];
     });
 
     tasu.listen('factory.identify', ({code}) => {
         assert(code);
-        if (code === factoryOne.code) return null;
+        if (code === rdrn.code) return null;
     });
 
     tasu.listen('acl.can', (accessRecord) => {
