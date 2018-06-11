@@ -1,19 +1,28 @@
 const {assert} = require('chai');
 const nock = require('nock');
 const request = require('request-promise-native');
-const appReady = require('../app');
+const qs = require('querystring');
+const {spawn} = require('child_process');
 const TasuMock = require('./tasuMock');
+const {players, factories, resources: {ironOne}} = require('@venture-api/fixtures');
 
-
+const {bonner} = players;
+const {rdrn} = factories;
 let tasu;
 let stair;
 let entrypoint;
 let server;
+let playerJWT;
+let factoryJWT;
+let stan;
+let nats;
 
 describe('routes', () => {
 
     before(async function ()  {
-
+        // stan = spawn('export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && nats-streaming-server', ['-p', '4223', '-DV'], {shell: '/bin/bash'});
+        // nats = spawn('export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && gnatsd', ['-p', '4222', '-DV'], {shell: '/bin/bash'});
+        const appReady = require('../app');
         const app = await appReady();
         tasu = app.get('tasu');
         stair = app.get('stair');
@@ -29,6 +38,8 @@ describe('routes', () => {
         server.close();
         tasu.close();
         stair.close();
+        // stan.kill('SIGINT');
+        // nats.kill('SIGINT');
         done();
     });
 
@@ -48,17 +59,85 @@ describe('routes', () => {
                 .get('/login')
                 .query(true)
                 .reply(200);
-            stair.read('player.register', ({id, email}) => {
-                assert.equal(email, 'mock@user.com');
+            await stair.read('player.register', ({id, name, email}) => {
+                assert.equal(email, bonner.email);
                 assert.isOk(id);
+                bonner.id = id;
+                assert.equal(name, bonner.name);
             });
             const res = await request.get(`${entrypoint}/auth/mock`, {
                 resolveWithFullResponse: true
             });
             assert.include(res.request.uri.path, '/login?token=eyJ');
+            playerJWT = qs.parse(res.request.uri.query).token;
         });
 
-    })
+    });
+
+    describe('/factories', () => {
+
+        describe('POST', () => {
+
+            it('creates a new factory', async () => {
+                await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
+                    assert.equal(name, rdrn.name);
+                    assert.equal(code, rdrn.code);
+                    assert.equal(type, rdrn.type);
+                    assert.equal(ownerId, bonner.id);
+                    rdrn.id = id;
+                    assert.isOk(id);
+                });
+                const res = await request.post(`${entrypoint}/factories`, {
+                    json: rdrn,
+                    headers: {
+                        'Authorization': `Bearer ${playerJWT}`
+                    },
+                    resolveWithFullResponse: true
+                });
+                const {name, code, type, ownerId, id} = res.body;
+                assert.equal(name, rdrn.name);
+                assert.equal(code, rdrn.code);
+                assert.equal(type, rdrn.type);
+                assert.equal(ownerId, bonner.id);
+                assert.equal(id, rdrn.id);
+                assert.isOk(res.headers['x-guid']);
+                factoryJWT = res.headers['x-token'];
+                assert.isOk(factoryJWT);
+            })
+
+        });
+
+    });
+
+    describe('/resources', () => {
+
+        describe('POST', () => {
+
+            it.skip('creates a new resource', async () => {
+                await stair.read('resource.create', ({id, location, units, defects, ownerId}) => {
+                    assert.equal(location, rdrn.id);
+                    assert.deepEqual(defects, ironOne.defects);
+                    assert.equal(ownerId, bonner.id);
+                    ironOne.id = id;
+                    assert.isOk(id);
+                });
+                const res = await request.post(`${entrypoint}/resources`, {
+                    headers: {
+                        'Authorization': `Bearer ${factoryJWT}`
+                    },
+                    resolveWithFullResponse: true
+                });
+                const {id, location, defects, ownerId} = res.body;
+                assert.equal(id, rdrn.id);
+                assert.equal(location, rdrn.id);
+                assert.equal(defects.length, 2);
+                assert.equal(ownerId, bonner.id);
+                assert.isOk(res.headers['x-guid']);
+            })
+
+        });
+
+    });
 
 
 });

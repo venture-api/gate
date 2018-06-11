@@ -1,5 +1,8 @@
 const {Router} = require('express');
+const {matchedData} = require('express-validator/filter');
+const issueJWT = require('../util/issueJWT');
 const authorize = require('../middleware/authorization');
+const validate = require('../middleware/validation');
 
 
 const factoryRouter = Router({});
@@ -7,18 +10,27 @@ const factoryRouter = Router({});
 
 // CREATE
 
-factoryRouter.post('/', authorize('user'), async (req, res, next) => {
+factoryRouter.post('/',
+    authorize('player'),
+    validate('factory:name', 'factory:type', 'factory:code'),
+    async (req, res, next) => {
 
-    const {id: ownerId} = req.player;
-    const stair = req.app.get('stair');
-    const {name} = req.body;
-    const guid = await stair.write('factory.create', {
-        name,
-        ownerId
+        const {player, app} = req;
+        const {name, type, code} = matchedData(req, {locations: ['body']});
+        const {id: ownerId} = player;
+        const stair = app.get('stair');
+        const tasu = app.get('tasu');
+        const {jwt: {secret}} = app.get('config');
+
+        const id = await tasu.request('factory.id', {type, code});
+        const newFactory = {id, name, ownerId, type, code};
+        const guid = await stair.write('factory.create', newFactory);
+        const token = await issueJWT({t: 'factory', i: id}, secret);
+        res.body = newFactory;
+        res.set('x-guid', guid);
+        res.set('x-token', token);
+        res.status(201);
+        next();
     });
-    res.body = {guid};
-    res.status(201);
-    next();
-});
 
 module.exports = factoryRouter;

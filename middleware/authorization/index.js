@@ -3,27 +3,63 @@ const {promisify} = require('util');
 const ReqError = require('../../util/ReqError');
 
 
+const ACTION_MAP = {
+    get: 'read',
+    post: 'create',
+    patch: 'update',
+    delete: 'delete'
+};
+
 module.exports = (moduleName) => {
 
-    const authorize = require(`./${moduleName}.js`);
     const verify = promisify(jwt.verify);
 
     return async (req, res, next) => {
 
+        const {token, app, baseUrl, method} = req;
+        const logger = app.get('logger');
+        const tasu = app.get('tasu');
+
 
         // verify token
 
-        const {token} = req;
         if (!token)
-            throw new ReqError(400, 'authorization token missing');
+            throw new ReqError(400, 'no authorization token');
+        const {jwt: {secret}} = app.get('config');
+        logger.debug('verifying token', token);
+        let tokenPayload;
+        try {
+            tokenPayload = await verify(token, secret);
+        } catch (error) {
+            throw new ReqError(400, 'token verification failed', error.message);
+        }
+        logger.debug('payload verified:', tokenPayload);
+        const {t: type, i: id} = tokenPayload;
+        if (!type || type !== moduleName)
+            throw new ReqError(400, `wrong token type '${type}' for module '${moduleName}'`);
+        if (!id)
+            throw new ReqError(400, 'no id in token payload');
 
-        const {jwt: {secret}} = req.app.get('config');
-        req.tokenPayload = await verify(token, secret);
+
+        // authenticate
+
+        const principal = await tasu.request(`${type}.get`, {id});
+        if (!principal)
+            throw new ReqError(400, 'unknown principal');
+        req[moduleName] = principal;
 
 
-        // call auth module
+        // authorize
 
-        req[moduleName] = await authorize(req);
-        next()
+        logger.debug('authorizing principal action');
+        const accessRecord = [
+            principal.id,
+            ACTION_MAP[method.toLowerCase()],
+            baseUrl
+        ];
+        const can = await tasu.request('acl.can', accessRecord);
+        if (!can)
+            throw new ReqError(403, 'authorization failed', accessRecord);
+        next();
     }
 };

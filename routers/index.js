@@ -1,14 +1,14 @@
 const {Router} = require('express');
-const raw = require('./raw');
+const resources = require('./resources');
 const factory = require('./factory');
 const status = require('./status');
 const auth = require('./auth');
 const mockOAuth = require('./mockOAuth');
 
 
-const router = Router();
+const router = Router({});
 
-router.use('/raw', raw);
+router.use('/resources', resources);
 router.use('/factories', factory);
 router.use('/status', status);
 router.use('/auth', auth);

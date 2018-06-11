@@ -25,7 +25,7 @@ plan.remote(function(remote) {
         remote.log('installing dependencies...');
         remote.exec('npm i');
         // remote.log('pruning dependencies...');
-        // remote.exec('npm prune');
+        remote.exec('npm prune');
         // remote.exec('npm test');
         remote.log('reloading process...');
         remote.exec('pm2 reload pm2.json --env development');
