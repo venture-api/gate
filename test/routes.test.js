@@ -2,7 +2,6 @@ const {assert} = require('chai');
 const nock = require('nock');
 const request = require('request-promise-native');
 const qs = require('querystring');
-const {spawn} = require('child_process');
 const TasuMock = require('./tasuMock');
 const {players, factories, resources: {ironOne}} = require('@venture-api/fixtures');
 
@@ -14,34 +13,29 @@ let entrypoint;
 let server;
 let playerJWT;
 let factoryJWT;
-let stan;
-let nats;
+
+before(async function ()  {
+
+    const appReady = require('../app');
+    const app = await appReady();
+    tasu = app.get('tasu');
+    stair = app.get('stair');
+    server = app.get('server');
+    const config = app.get('config');
+    entrypoint = `http://${config.host}:${config.port}`;
+    TasuMock(tasu);
+    server.listen(config.port);
+});
+
+after(async function () {
+
+    console.log('> stopping test server');
+    server.close();
+    tasu.close();
+    stair.close();
+});
 
 describe('routes', () => {
-
-    before(async function ()  {
-        // stan = spawn('export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && nats-streaming-server', ['-p', '4223', '-DV'], {shell: '/bin/bash'});
-        // nats = spawn('export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && gnatsd', ['-p', '4222', '-DV'], {shell: '/bin/bash'});
-        const appReady = require('../app');
-        const app = await appReady();
-        tasu = app.get('tasu');
-        stair = app.get('stair');
-        server = app.get('server');
-        const config = app.get('config');
-        entrypoint = `http://${config.host}:${config.port}`;
-        TasuMock(tasu);
-        server.listen(config.port);
-    });
-
-    after(function (done) {
-        console.log('> stopping test server');
-        server.close();
-        tasu.close();
-        stair.close();
-        // stan.kill('SIGINT');
-        // nats.kill('SIGINT');
-        done();
-    });
 
     describe('/status', () => {
 
@@ -49,7 +43,6 @@ describe('routes', () => {
             const body = await request.get(`${entrypoint}/status`);
             assert.equal(body, '{"mold":{"status":"ok","id":"MOLD-001"}}');
         });
-
     });
 
     describe('/auth/:service', () => {
@@ -71,7 +64,6 @@ describe('routes', () => {
             assert.include(res.request.uri.path, '/login?token=eyJ');
             playerJWT = qs.parse(res.request.uri.query).token;
         });
-
     });
 
     describe('/factories', () => {
@@ -104,9 +96,7 @@ describe('routes', () => {
                 factoryJWT = res.headers['x-token'];
                 assert.isOk(factoryJWT);
             })
-
         });
-
     });
 
     describe('/resources', () => {
@@ -134,10 +124,6 @@ describe('routes', () => {
                 assert.equal(ownerId, bonner.id);
                 assert.isOk(res.headers['x-guid']);
             })
-
         });
-
     });
-
-
 });
