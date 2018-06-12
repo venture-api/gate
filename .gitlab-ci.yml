@@ -2,7 +2,7 @@ image: node:8
 
 variables:
   NODE_ENV: ci
-  LOG_LEVEL: info
+  LOG_LEVEL: error
 
 services:
   - nats:latest

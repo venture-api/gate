@@ -21,7 +21,9 @@ const app = express();
 app.set('logger', logger);
 
 app.enable('trust proxy');
-app.use(morgan(':date[iso] gate INFO request :remote-addr :method :url :status :response-time ms'));
+app.use(morgan('dev', {
+    skip: () => {return process.env.LOG_LEVEL !== 'debug' }
+}));
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
 app.use(bearerToken());
