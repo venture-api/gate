@@ -38,7 +38,105 @@ after(async function () {
     stair.close();
 });
 
-describe('HTTP endpoints', () => {
+describe('modules', () => {
+
+    describe('middleware', () => {
+
+        describe('authorize', () => {
+
+            it('throws if there is no authorization header', async () => {
+                try {
+                    const res = await request.post(`${entrypoint}/factories`, {
+                        json: rdrn,
+                        resolveWithFullResponse: true
+                    });
+                    assert.isUndefined(res);
+                } catch (error) {
+                    assert.equal(error.statusCode, 400);
+                    assert.equal(error.response.body.message, `no authorization header`);
+                    assert.equal(error.response.body.error, `Bad Request`);
+                }
+            });
+
+            it('throws if there is no token', async () => {
+                try {
+                    const res = await request.post(`${entrypoint}/factories`, {
+                        json: rdrn,
+                        headers: {
+                            'Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'
+                        },
+                        resolveWithFullResponse: true
+                    });
+                    assert.isUndefined(res);
+                } catch (error) {
+                    assert.equal(error.statusCode, 400);
+                    assert.equal(error.response.body.message, 'no authorization token');
+                    assert.equal(error.response.body.error, 'Bad Request');
+                }
+            });
+
+            it('throws if token verification failed', async () => {
+                try {
+                    const res = await request.post(`${entrypoint}/factories`, {
+                        json: rdrn,
+                        headers: {
+                            'Authorization': 'Bearer YWxhZGRpbjpvcGVuc2VzYW1l'
+                        },
+                        resolveWithFullResponse: true
+                    });
+                    assert.isUndefined(res);
+                } catch (error) {
+                    assert.equal(error.statusCode, 400);
+                    assert.equal(error.response.body.message, 'token verification failed');
+                    assert.equal(error.response.body.error, 'Bad Request');
+                }
+            });
+
+            it('throws if token type is wrong', async () => {
+                try {
+                    const res = await request.post(`${entrypoint}/factories`, {
+                        json: rdrn,
+                        headers: {
+                            'Authorization': 'Bearer' +
+                            ' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZmFj' +
+                            'dG9yeSIsImkiOiJQTC1ZU0w2SDNETlJPTjIiLCJpYXQiOjE1Mj' +
+                            'k2MTE4MDh9.JWB2CcjJLPk19uOrcn498sn6f3c2BwSQrY9agy32-SY'
+                        },
+                        resolveWithFullResponse: true
+                    });
+                    assert.isUndefined(res);
+                } catch (error) {
+                    assert.equal(error.statusCode, 400);
+                    assert.equal(error.response.body.message,
+                        `expect token type 'player', but got 'factory'`);
+                    assert.equal(error.response.body.error, 'Bad Request');
+                }
+            });
+
+            it('throws if token has no principal id', async () => {
+                try {
+                    const res = await request.post(`${entrypoint}/factories`, {
+                        json: rdrn,
+                        headers: {
+                            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsIn' +
+                            'R5cCI6IkpXVCJ9.eyJ0IjoicGxheWVyIiwiaWF0IjoxNTI' +
+                            '5NjExODA4fQ._ZLGTOs-OmCwTVdyqv2mxyS3PqXWQsPKyj' +
+                            'OihzCvbYo'
+                        },
+                        resolveWithFullResponse: true
+                    });
+                    assert.isUndefined(res);
+                } catch (error) {
+                    assert.equal(error.statusCode, 400);
+                    assert.equal(error.response.body.message, 'no id in token payload');
+                    assert.equal(error.response.body.error, 'Bad Request');
+                }
+            });
+        });
+    });
+});
+
+describe('endpoints', () => {
 
     describe('GET /status', () => {
 
@@ -108,6 +206,7 @@ describe('HTTP endpoints', () => {
                     },
                     resolveWithFullResponse: true
                 });
+                assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
                 assert.equal(error.response.body.message, `body should have required property 'code'`);
