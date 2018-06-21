@@ -2,8 +2,7 @@ module.exports = async (gate, logger) => {
 
     const {fastify, tasu} = gate.get();
 
-    fastify.get('/status', async(req, res) => {
-        logger.debug('returning status');
+    fastify.get('/status', async() => {
         const mold = await tasu.request('mold.status', {});
         return {mold};
     })

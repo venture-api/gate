@@ -1,7 +1,7 @@
 const {Router} = require('express');
 const ReqError = require('../util/ReqError');
 const issueJWT = require('../util/issueJWT');
-const validate = require('../middleware/validation');
+const validate = require('../modules/middleware/validation');
 
 
 const authRouter = Router({});

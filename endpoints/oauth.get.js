@@ -6,10 +6,7 @@ module.exports = async (gate, logger) => {
 
     const schema = {
         params: {
-            type: 'object',
-            properties: {
-                service: {type: 'string', enum: Object.keys(oauth)},
-            }
+            service: {type: 'string', enum: Object.keys(oauth)}
         }
     };
 

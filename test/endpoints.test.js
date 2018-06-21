@@ -40,7 +40,7 @@ after(async function () {
 
 describe('routes', () => {
 
-    describe('/status', () => {
+    describe('GET /status', () => {
 
         it('responds OK', async () => {
             const body = await request.get(`${entrypoint}/status`);
@@ -48,7 +48,7 @@ describe('routes', () => {
         });
     });
 
-    describe('/auth/:service', () => {
+    describe('GET /oauth/:service', () => {
 
         it('responds via mock strategy', async () => {
             nock('http://localhost:3000')
@@ -69,37 +69,34 @@ describe('routes', () => {
         });
     });
 
-    describe.skip('/factories', () => {
+    describe('POST /factories', () => {
 
-        describe('POST', () => {
-
-            it('creates a new factory', async () => {
-                await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
-                    assert.equal(name, rdrn.name);
-                    assert.equal(code, rdrn.code);
-                    assert.equal(type, rdrn.type);
-                    assert.equal(ownerId, bonner.id);
-                    rdrn.id = id;
-                    assert.isOk(id);
-                });
-                const res = await request.post(`${entrypoint}/factories`, {
-                    json: rdrn,
-                    headers: {
-                        'Authorization': `Bearer ${playerJWT}`
-                    },
-                    resolveWithFullResponse: true
-                });
-                const {name, code, type, ownerId, id} = res.body;
+        it('creates a new factory', async () => {
+            await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
                 assert.equal(name, rdrn.name);
                 assert.equal(code, rdrn.code);
                 assert.equal(type, rdrn.type);
                 assert.equal(ownerId, bonner.id);
-                assert.equal(id, rdrn.id);
-                assert.isOk(res.headers['x-guid']);
-                factoryJWT = res.headers['x-token'];
-                assert.isOk(factoryJWT);
-            })
-        });
+                rdrn.id = id;
+                assert.isOk(id);
+            });
+            const res = await request.post(`${entrypoint}/factories`, {
+                json: rdrn,
+                headers: {
+                    'Authorization': `Bearer ${playerJWT}`
+                },
+                resolveWithFullResponse: true
+            });
+            const {name, code, type, ownerId, id} = res.body;
+            assert.equal(name, rdrn.name);
+            assert.equal(code, rdrn.code);
+            assert.equal(type, rdrn.type);
+            assert.equal(ownerId, bonner.id);
+            assert.equal(id, rdrn.id);
+            assert.isOk(res.headers['x-guid']);
+            factoryJWT = res.headers['x-token'];
+            assert.isOk(factoryJWT);
+        })
     });
 
     describe.skip('/resources', () => {

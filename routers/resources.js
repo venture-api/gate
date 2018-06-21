@@ -1,5 +1,5 @@
 const {Router} = require('express');
-const authorize = require('../middleware/authorization');
+const authorize = require('../modules/middleware/index');
 
 
 const resourseRouter = Router({});

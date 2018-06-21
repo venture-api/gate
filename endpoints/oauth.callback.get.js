@@ -1,5 +1,5 @@
 const issueJWT = require('../util/issueJWT');
-const {BadRequest} = require('http-errors');
+const {UnprocessableEntity} = require('http-errors');
 
 
 module.exports = async (kojo, logger) => {
@@ -8,9 +8,9 @@ module.exports = async (kojo, logger) => {
 
     const schema = {
         params: {
-            type: 'object',
-            properties: {
-                service: {type: 'string', enum: Object.keys(oauth)},
+            service: {
+                type: 'string',
+                enum: Object.keys(oauth)
             }
         }
     };
@@ -27,7 +27,7 @@ module.exports = async (kojo, logger) => {
         const [email] = emails;
 
         if (!email)
-            throw new BadRequest('no email in profile');
+            throw new UnprocessableEntity('no email in profile');
 
         const existingPlayer = await tasu.request('player.identify', {email});
         let player;

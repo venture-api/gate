@@ -1,8 +1,8 @@
 const {Router} = require('express');
 const {matchedData} = require('express-validator/filter');
 const issueJWT = require('../util/issueJWT');
-const authorize = require('../middleware/authorization');
-const validate = require('../middleware/validation');
+const authorize = require('../modules/middleware/index');
+const validate = require('../modules/middleware/validation');
 
 
 const factoryRouter = Router({});
