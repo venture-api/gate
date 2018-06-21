@@ -19,7 +19,11 @@ module.exports = async function (moduleName) {
     return async (req) => {
 
         const {raw: {method, url}} = req;
-        const token = req.headers.authorization.split(' ')[1];
+
+        if (!req.headers.authorization)
+            throw new BadRequest('no authorization header');
+
+        const token = req.headers.authorization.split('Bearer ')[1];
         logger.debug('checking token presence');
 
         if (!token)
@@ -32,12 +36,12 @@ module.exports = async function (moduleName) {
         try {
             tokenPayload = await verify(token, secret);
         } catch (error) {
-            throw new BadRequest('token verification failed', error.message);
+            throw new BadRequest('token verification failed');
         }
         const {t: type, i: id} = tokenPayload;
 
         if (!type || type !== moduleName)
-            throw new BadRequest(`wrong token type '${type}' for module '${moduleName}'`);
+            throw new BadRequest(`expect token type '${moduleName}', but got '${type}'`);
 
         if (!id)
             throw new BadRequest('no id in token payload');
