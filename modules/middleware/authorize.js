@@ -19,10 +19,9 @@ module.exports = async function (moduleName) {
     return async (req, res) => {
 
         const {raw: {method, url}} = req;
-        logger.debug('checking token presence');
         const token = req.headers.authorization.split(' ')[1];
+        logger.debug('checking token presence');
 
-        // verify token
         if (!token)
             throw new BadRequest('no authorization token');
 

@@ -88,6 +88,7 @@ describe('routes', () => {
                 resolveWithFullResponse: true
             });
             const {name, code, type, ownerId, id} = res.body;
+            assert.equal(res.statusCode, 201);
             assert.equal(name, rdrn.name);
             assert.equal(code, rdrn.code);
             assert.equal(type, rdrn.type);
@@ -99,11 +100,11 @@ describe('routes', () => {
         })
     });
 
-    describe.skip('/resources', () => {
+    describe('/resources', () => {
 
         describe('POST', () => {
 
-            it.skip('creates a new resource', async () => {
+            it('creates a new resource', async () => {
                 await stair.read('resource.create', ({id, location, units, defects, ownerId}) => {
                     assert.equal(location, rdrn.id);
                     assert.deepEqual(defects, ironOne.defects);
@@ -112,15 +113,19 @@ describe('routes', () => {
                     assert.isOk(id);
                 });
                 const res = await request.post(`${entrypoint}/resources`, {
+                    json: true,
                     headers: {
                         'Authorization': `Bearer ${factoryJWT}`
                     },
                     resolveWithFullResponse: true
                 });
-                const {id, location, defects, ownerId} = res.body;
-                assert.equal(id, rdrn.id);
+                assert.equal(res.statusCode, 201);
+                console.log(res.body);
+                const {id, location, defects, ownerId, producedAt} = res.body;
+                assert.equal(id, ironOne.id);
                 assert.equal(location, rdrn.id);
-                assert.equal(defects.length, 2);
+                assert.equal(producedAt, rdrn.id);
+                assert.equal(defects.length, 1);
                 assert.equal(ownerId, bonner.id);
                 assert.isOk(res.headers['x-guid']);
             })

@@ -1,5 +1,5 @@
 const assert = require('assert');
-const {players: {bonner}, factories: {rdrn}, regions} = require('@venture-api/fixtures');
+const {players: {bonner}, factories: {rdrn}, regions, resources} = require('@venture-api/fixtures');
 
 
 module.exports = (tasu) => {
@@ -48,7 +48,7 @@ module.exports = (tasu) => {
     });
 
     tasu.listen('resource.id', ({}) => {
-        return 'RS-O䠘힏B呹䅞B쎴䲪8T8賯䋸KS5O-CL';
+        return resources.ironOne.id;
     });
 
 

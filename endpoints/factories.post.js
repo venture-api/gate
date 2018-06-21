@@ -36,8 +36,11 @@ module.exports = async (gate, logger) => {
 
         const id = await tasu.request('factory.id', {type, code});
         const newFactory = {id, name, ownerId, type, code};
+
+        logger.info('creating factory', type, id);
         const guid = await stair.write('factory.create', newFactory);
         const token = await issueJWT({t: 'factory', i: id}, secret);
+
         res.header('x-guid', guid);
         res.header('x-token', token);
         res.code(201);
