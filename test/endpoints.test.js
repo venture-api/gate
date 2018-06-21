@@ -38,7 +38,7 @@ after(async function () {
     stair.close();
 });
 
-describe('routes', () => {
+describe('HTTP endpoints', () => {
 
     describe('GET /status', () => {
 
@@ -100,34 +100,32 @@ describe('routes', () => {
         })
     });
 
-    describe('/resources', () => {
+    describe('POST /resources', () => {
 
-        describe('POST', () => {
-
-            it('creates a new resource', async () => {
-                await stair.read('resource.create', ({id, location, units, defects, ownerId}) => {
-                    assert.equal(location, rdrn.id);
-                    assert.deepEqual(defects, ironOne.defects);
-                    assert.equal(ownerId, bonner.id);
-                    ironOne.id = id;
-                    assert.isOk(id);
-                });
-                const res = await request.post(`${entrypoint}/resources`, {
-                    json: true,
-                    headers: {
-                        'Authorization': `Bearer ${factoryJWT}`
-                    },
-                    resolveWithFullResponse: true
-                });
-                assert.equal(res.statusCode, 201);
-                const {id, location, defects, ownerId, producedAt} = res.body;
-                assert.equal(id, ironOne.id);
+        it('creates a new resource', async () => {
+            await stair.read('resource.create', ({id, location, units, defects, ownerId}) => {
                 assert.equal(location, rdrn.id);
-                assert.equal(producedAt, rdrn.id);
-                assert.equal(defects.length, 1);
+                assert.deepEqual(defects, ironOne.defects);
                 assert.equal(ownerId, bonner.id);
-                assert.isOk(res.headers['x-guid']);
-            })
-        });
+                ironOne.id = id;
+                assert.isOk(id);
+            });
+            const res = await request.post(`${entrypoint}/resources`, {
+                json: true,
+                headers: {
+                    'Authorization': `Bearer ${factoryJWT}`
+                },
+                resolveWithFullResponse: true
+            });
+            assert.equal(res.statusCode, 201);
+            const {id, location, defects, ownerId, producedAt} = res.body;
+            assert.equal(id, ironOne.id);
+            assert.equal(location, rdrn.id);
+            assert.equal(producedAt, rdrn.id);
+            assert.equal(defects.length, 1);
+            assert.equal(ownerId, bonner.id);
+            assert.isOk(res.headers['x-guid']);
+        })
+
     });
 });
