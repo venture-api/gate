@@ -34,3 +34,9 @@ Troubleshooting
 
 If you see something like `ECONNREFUSED 127.0.0.1:4222`, you need to
 `npm run nats` or `npm run stan`.
+
+
+Credits
+-------
+
+Icons by [icons8](https://icons8.com)
