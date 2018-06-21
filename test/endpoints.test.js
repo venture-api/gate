@@ -97,6 +97,23 @@ describe('HTTP endpoints', () => {
             assert.isOk(res.headers['x-guid']);
             factoryJWT = res.headers['x-token'];
             assert.isOk(factoryJWT);
+        });
+
+        it('responds with validation error', async () => {
+            try {
+                const res = await request.post(`${entrypoint}/factories`, {
+                    json: {name: 'Bad Factory'},
+                    headers: {
+                        'Authorization': `Bearer ${playerJWT}`
+                    },
+                    resolveWithFullResponse: true
+                });
+            } catch (error) {
+                assert.equal(error.statusCode, 400);
+                assert.equal(error.response.body.message, `body should have required property 'code'`);
+                assert.equal(error.response.body.error, `Bad Request`);
+            }
+
         })
     });
 

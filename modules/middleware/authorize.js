@@ -16,7 +16,7 @@ module.exports = async function (moduleName) {
     const {kojo, logger} = this;
     const {tasu, config} = kojo.get();
 
-    return async (req, res) => {
+    return async (req) => {
 
         const {raw: {method, url}} = req;
         const token = req.headers.authorization.split(' ')[1];

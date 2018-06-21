@@ -17,9 +17,10 @@ module.exports = async () => {
 
     // Fastify
     const fastify = Fastify({});
-    fastify.setErrorHandler((error, request, reply) => {
-        console.log('originalUrl:', request.raw.method, request.raw.originalUrl);
-        console.log('params:', request.params);
+    fastify.setErrorHandler((error, req, res) => {
+        const {params, query, body} = req;
+        res.send(error);
+        console.log(req.raw.method, req.raw.originalUrl, {params, query, body});
         console.error(error);
     });
     fastify.register(formbody);
