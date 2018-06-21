@@ -9,62 +9,62 @@ const Tasu = require('tasu');
 const Stair = require('stair');
 const configLoader = require('yt-config');
 const routers = require('./routers');
-const errorHandler = require('./middleware/errorHandler');
-const responseSender = require('./middleware/responseSender');
+const errorHandler = require('./errorHandler');
+const responseSender = require('./responseSender');
 const logger = require('./logger');
 const mockStrategy = require('./strategies/mock');
 const googleStrategy = require('./strategies/google');
 const pack = require('./package.json');
 
 
-const app = express();
-app.set('logger', logger);
+const gate = express();
+gate.set('logger', logger);
 
-app.enable('trust proxy');
-app.use(morgan('dev', {
+gate.enable('trust proxy');
+gate.use(morgan('dev', {
     skip: () => {return process.env.LOG_LEVEL !== 'debug' }
 }));
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
-app.use(bearerToken());
-app.use(routers);
-app.use(errorHandler);
-app.use(responseSender);
+gate.use(bodyParser.urlencoded({extended: true}));
+gate.use(bodyParser.json());
+gate.use(bearerToken());
+gate.use(routers);
+gate.use(errorHandler);
+gate.use(responseSender);
 
 
 module.exports = async () => {
 
     const config = await configLoader('config.ini');
-    app.set('config', config);
-    app.set('package', pack);
+    gate.set('config', config);
+    gate.set('package', pack);
 
 
     // PASSPORT
 
     passport.use('google', googleStrategy(config.google));
     passport.use('mock', mockStrategy(config));
-    app.use(passport.initialize());
-    app.set('passport', passport);
+    gate.use(passport.initialize());
+    gate.set('passport', passport);
 
 
     // TASU
 
     const tasu = new Tasu(config.tasu);
     await tasu.connected();
-    app.set('tasu', tasu);
+    gate.set('tasu', tasu);
 
 
     // STAIR
 
     const stair = new Stair(config.stair);
     await stair.connected();
-    app.set('stair', stair);
+    gate.set('stair', stair);
 
 
     // HTTP SERVER
 
-    const server = http.createServer(app);
-    app.set('server', server);
+    const server = http.createServer(gate);
+    gate.set('server', server);
 
-    return app;
+    return gate;
 };

@@ -3,41 +3,44 @@ const nock = require('nock');
 const request = require('request-promise-native');
 const qs = require('querystring');
 const TasuMock = require('./tasuMock');
+const Bootstrap = require('../bootstrap');
 const {players, factories, resources: {ironOne}} = require('@venture-api/fixtures');
+
 
 const {bonner} = players;
 const {rdrn} = factories;
 let tasu;
 let stair;
 let entrypoint;
-let server;
+let fastify;
 let playerJWT;
 let factoryJWT;
 
 before(async function ()  {
-
-    const appReady = require('../app');
-    const app = await appReady();
-    tasu = app.get('tasu');
-    stair = app.get('stair');
-    server = app.get('server');
-    const config = app.get('config');
-    entrypoint = `http://${config.host}:${config.port}`;
-    TasuMock(tasu);
-    server.listen(config.port);
+    try {
+        const gate = await Bootstrap();
+        tasu = gate.get('tasu');
+        stair = gate.get('stair');
+        fastify = gate.get('fastify');
+        const {http: {host, port}} = gate.get('config');
+        entrypoint = `http://${host}:${port}`;
+        TasuMock(tasu);
+    } catch (error) {
+        throw error;
+    }
 });
 
 after(async function () {
 
     console.log('> stopping test server');
-    server.close();
+    fastify.close();
     tasu.close();
     stair.close();
 });
 
 describe('routes', () => {
 
-    describe('/status', () => {
+    describe('GET /status', () => {
 
         it('responds OK', async () => {
             const body = await request.get(`${entrypoint}/status`);
@@ -45,7 +48,7 @@ describe('routes', () => {
         });
     });
 
-    describe('/auth/:service', () => {
+    describe('GET /oauth/:service', () => {
 
         it('responds via mock strategy', async () => {
             nock('http://localhost:3000')
@@ -58,7 +61,7 @@ describe('routes', () => {
                 bonner.id = id;
                 assert.equal(name, bonner.name);
             });
-            const res = await request.get(`${entrypoint}/auth/mock`, {
+            const res = await request.get(`${entrypoint}/oauth/mock`, {
                 resolveWithFullResponse: true
             });
             assert.include(res.request.uri.path, '/login?token=eyJ');
@@ -66,44 +69,42 @@ describe('routes', () => {
         });
     });
 
-    describe('/factories', () => {
+    describe('POST /factories', () => {
 
-        describe('POST', () => {
-
-            it('creates a new factory', async () => {
-                await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
-                    assert.equal(name, rdrn.name);
-                    assert.equal(code, rdrn.code);
-                    assert.equal(type, rdrn.type);
-                    assert.equal(ownerId, bonner.id);
-                    rdrn.id = id;
-                    assert.isOk(id);
-                });
-                const res = await request.post(`${entrypoint}/factories`, {
-                    json: rdrn,
-                    headers: {
-                        'Authorization': `Bearer ${playerJWT}`
-                    },
-                    resolveWithFullResponse: true
-                });
-                const {name, code, type, ownerId, id} = res.body;
+        it('creates a new factory', async () => {
+            await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
                 assert.equal(name, rdrn.name);
                 assert.equal(code, rdrn.code);
                 assert.equal(type, rdrn.type);
                 assert.equal(ownerId, bonner.id);
-                assert.equal(id, rdrn.id);
-                assert.isOk(res.headers['x-guid']);
-                factoryJWT = res.headers['x-token'];
-                assert.isOk(factoryJWT);
-            })
-        });
+                rdrn.id = id;
+                assert.isOk(id);
+            });
+            const res = await request.post(`${entrypoint}/factories`, {
+                json: rdrn,
+                headers: {
+                    'Authorization': `Bearer ${playerJWT}`
+                },
+                resolveWithFullResponse: true
+            });
+            const {name, code, type, ownerId, id} = res.body;
+            assert.equal(res.statusCode, 201);
+            assert.equal(name, rdrn.name);
+            assert.equal(code, rdrn.code);
+            assert.equal(type, rdrn.type);
+            assert.equal(ownerId, bonner.id);
+            assert.equal(id, rdrn.id);
+            assert.isOk(res.headers['x-guid']);
+            factoryJWT = res.headers['x-token'];
+            assert.isOk(factoryJWT);
+        })
     });
 
     describe('/resources', () => {
 
         describe('POST', () => {
 
-            it.skip('creates a new resource', async () => {
+            it('creates a new resource', async () => {
                 await stair.read('resource.create', ({id, location, units, defects, ownerId}) => {
                     assert.equal(location, rdrn.id);
                     assert.deepEqual(defects, ironOne.defects);
@@ -112,15 +113,19 @@ describe('routes', () => {
                     assert.isOk(id);
                 });
                 const res = await request.post(`${entrypoint}/resources`, {
+                    json: true,
                     headers: {
                         'Authorization': `Bearer ${factoryJWT}`
                     },
                     resolveWithFullResponse: true
                 });
-                const {id, location, defects, ownerId} = res.body;
-                assert.equal(id, rdrn.id);
+                assert.equal(res.statusCode, 201);
+                console.log(res.body);
+                const {id, location, defects, ownerId, producedAt} = res.body;
+                assert.equal(id, ironOne.id);
                 assert.equal(location, rdrn.id);
-                assert.equal(defects.length, 2);
+                assert.equal(producedAt, rdrn.id);
+                assert.equal(defects.length, 1);
                 assert.equal(ownerId, bonner.id);
                 assert.isOk(res.headers['x-guid']);
             })
