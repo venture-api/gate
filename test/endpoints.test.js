@@ -120,7 +120,6 @@ describe('routes', () => {
                     resolveWithFullResponse: true
                 });
                 assert.equal(res.statusCode, 201);
-                console.log(res.body);
                 const {id, location, defects, ownerId, producedAt} = res.body;
                 assert.equal(id, ironOne.id);
                 assert.equal(location, rdrn.id);
