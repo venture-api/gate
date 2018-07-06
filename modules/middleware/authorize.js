@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const {BadRequest, Unauthorized} = require('http-errors');
 const {promisify} = require('util');
+const capitalize = require('../../util/capitalize');
 
 
 const ACTION_MAP = {
@@ -11,7 +12,7 @@ const ACTION_MAP = {
 };
 const verify = promisify(jwt.verify);
 
-module.exports = async function (moduleName) {
+module.exports = function (principalType) {
 
     const {kojo, logger} = this;
     const {tasu, config} = kojo.get();
@@ -40,20 +41,20 @@ module.exports = async function (moduleName) {
         }
         const {t: type, i: id} = tokenPayload;
 
-        if (!type || type !== moduleName)
-            throw new BadRequest(`expect token type '${moduleName}', but got '${type}'`);
+        if (!type || type !== principalType)
+            throw new BadRequest(`expect token type '${principalType}', but got '${type}'`);
 
         if (!id)
             throw new BadRequest('no id in token payload');
 
         // authenticate
         logger.debug('authenticating player', id);
-        const principal = await tasu.request(`${type}.get`, {id});
+        const principal = await tasu.request(`get${capitalize(type)}`, {id});
 
         if (!principal)
             throw new BadRequest('unknown principal');
 
-        req[moduleName] = principal;
+        req[principalType] = principal;
 
         // authorize
         const action = ACTION_MAP[method.toLowerCase()];

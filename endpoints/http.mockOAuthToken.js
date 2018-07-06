@@ -1,4 +1,4 @@
-const {players: {bonner}} = require('@venture-api/fixtures');
+const {bonner} = require('@venture-api/fixtures/fixtures/player');
 
 
 module.exports = async (gate, logger) => {

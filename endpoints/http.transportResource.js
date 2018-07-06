@@ -1,17 +1,17 @@
-const {Conflict} = require('http-errors');
-const issueJWT = require('../util/issueJWT');
+const facilityId = require('@venture-api/fixtures/schemata/facility/id');
 
 
 module.exports = async (gate, logger) => {
 
-    const {fastify, tasu, stair, config} = gate.get();
+    const {fastify, tasu, stair} = gate.get();
     const {middleware} = gate.modules;
 
     const conf = {
-        beforeHandler: await middleware.authorize('factory')
+        schema: {body: {type: 'object', properties: {location: facilityId}}},
+        beforeHandler: await middleware.authorize('transport')
     };
 
-    fastify.post('/resources', conf, async(req, res) => {
+    fastify.patch('/resources/:id', conf, async(req, res) => {
 
         const {id: location, type, code, ownerId, region} = req.factory;
 
