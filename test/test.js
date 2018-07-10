@@ -5,7 +5,7 @@ const qs = require('querystring');
 const TasuMock = require('./tasuMock');
 const Bootstrap = require('../bootstrap');
 const {bonner} = require('@venture-api/fixtures/fixtures/player');
-const {rdrn} = require('@venture-api/fixtures/fixtures/facility');
+const {rdrn, gawa} = require('@venture-api/fixtures/fixtures/facility');
 const {ironOne} = require('@venture-api/fixtures/fixtures/resource');
 
 
@@ -88,28 +88,6 @@ describe('modules', () => {
                 } catch (error) {
                     assert.equal(error.statusCode, 400);
                     assert.equal(error.response.body.message, 'token verification failed');
-                    assert.equal(error.response.body.error, 'Bad Request');
-                }
-            });
-
-            it('throws if token type is wrong', async () => {
-                try {
-                    const res = await request.post(`${entrypoint}/facilities`, {
-                        json: rdrn,
-                        headers: {
-                            'Authorization': 'Bearer' +
-                            ' eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZmF' +
-                            'jaWxpdHkiLCJpIjoiRkEtV1RRQTZHTjNESzI3SVQtSU8iLCJp' +
-                            'YXQiOjE1Mjk2MTE4MDh9.AQVfBY6so8-lHF86kJNc153shBRk' +
-                            'nNvK18pU_HcrxAo'
-                        },
-                        resolveWithFullResponse: true
-                    });
-                    assert.isUndefined(res);
-                } catch (error) {
-                    assert.equal(error.statusCode, 400);
-                    assert.equal(error.response.body.message,
-                        `expect token type 'player', but got 'facility'`);
                     assert.equal(error.response.body.error, 'Bad Request');
                 }
             });
@@ -246,30 +224,20 @@ describe('endpoints', () => {
 
     });
 
-    describe.skip('Transport Resource', () => {
+    describe('Transport Resource', () => {
 
         it('transports a resource from one location to another', async () => {
-            await stair.read('transportResource', ({id, newLocation}) => {
-                assert.equal(location, rdrn.id);
-                assert.deepEqual(defects, ironOne.defects);
-                assert.equal(ownerId, bonner.id);
-                ironOne.id = id;
-                assert.isOk(id);
+            await stair.read('transportResource', ({id, location}) => {
+                assert.equal(location, gawa.id);
             });
-            const res = await request.post(`${entrypoint}/resources`, {
-                json: true,
+            const res = await request.patch(`${entrypoint}/resources/${ironOne.id}`, {
+                json: {location: gawa.id},
                 headers: {
-                    'Authorization': `Bearer ${factoryJWT}`
+                    'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZmFjaWxpdHkiLCJpIjoiRkEtVURIUlNCT1dWRTMxTzEtVFIiLCJpYXQiOjE1MzA5MTM2OTJ9.4WIHZwunKM3ezVqVOAgRSCcps8nMoRZyj8lPGDqPUak`
                 },
                 resolveWithFullResponse: true
             });
-            assert.equal(res.statusCode, 201);
-            const {id, location, defects, ownerId, producedAt} = res.body;
-            assert.equal(id, ironOne.id);
-            assert.equal(location, rdrn.id);
-            assert.equal(producedAt, rdrn.id);
-            assert.equal(defects.length, 1);
-            assert.equal(ownerId, bonner.id);
+            assert.equal(res.statusCode, 204);
             assert.isOk(res.headers['x-guid']);
         })
 

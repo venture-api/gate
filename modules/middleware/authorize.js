@@ -12,7 +12,7 @@ const ACTION_MAP = {
 };
 const verify = promisify(jwt.verify);
 
-module.exports = function (principalType) {
+module.exports = function (details=null) {
 
     const {kojo, logger} = this;
     const {tasu, config} = kojo.get();
@@ -41,25 +41,22 @@ module.exports = function (principalType) {
         }
         const {t: type, i: id} = tokenPayload;
 
-        if (!type || type !== principalType)
-            throw new BadRequest(`expect token type '${principalType}', but got '${type}'`);
-
         if (!id)
             throw new BadRequest('no id in token payload');
 
         // authenticate
-        logger.debug('authenticating player', id);
+        logger.debug('authenticating', type, id);
         const principal = await tasu.request(`get${capitalize(type)}`, {id});
 
         if (!principal)
             throw new BadRequest('unknown principal');
 
-        req[principalType] = principal;
+        req[type] = principal;
 
         // authorize
         const action = ACTION_MAP[method.toLowerCase()];
-        logger.debug('authorizing:', action, url);
-        const accessRecord = [principal.id, action, url];
+        logger.debug('authorizing:', type, principal.id, action, url, details);
+        const accessRecord = [principal.id, action, url, details];
         const can = await tasu.request('acl.can', accessRecord);
 
         if (!can)

@@ -1,6 +1,6 @@
 const assert = require('assert');
 const {bonner} = require('@venture-api/fixtures/fixtures/player');
-const {rdrn} = require('@venture-api/fixtures/fixtures/facility');
+const {rdrn, boex} = require('@venture-api/fixtures/fixtures/facility');
 const {ironOne} = require('@venture-api/fixtures/fixtures/resource');
 const regions = require('@venture-api/fixtures/fixtures/region');
 
@@ -24,7 +24,12 @@ module.exports = (tasu) => {
 
     tasu.listen('getFacility', ({id}) => {
         assert(id);
-        if (id === rdrn.id) return rdrn;
+        switch (id) {
+            case rdrn.id:
+                return rdrn;
+            case boex.id:
+                return boex;
+        }
     });
 
     tasu.listen('getRegion', ({name}) => {

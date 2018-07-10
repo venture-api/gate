@@ -4,7 +4,7 @@ module.exports = async (gate, logger) => {
     const {middleware} = gate.modules;
 
     const conf = {
-        beforeHandler: await middleware.authorize('facility')
+        beforeHandler: await middleware.authorize()
     };
 
     fastify.post('/resources', conf, async(req, res) => {

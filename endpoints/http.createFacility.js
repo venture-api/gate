@@ -1,6 +1,6 @@
 const {Conflict} = require('http-errors');
 const issueJWT = require('../util/issueJWT');
-const name = require('@venture-api/fixtures/schemata/facility/name');
+const {name} = require('@venture-api/fixtures/schemata/facility');
 const {factory, warehouse} = require('@venture-api/fixtures/constants/facility');
 
 
@@ -21,7 +21,7 @@ module.exports = async (gate, logger) => {
                 required: ['name', 'code', 'type']
             }
         },
-        beforeHandler: await middleware.authorize('player')
+        beforeHandler: await middleware.authorize()
     };
 
     fastify.post('/facilities', conf, async(req, res) => {
