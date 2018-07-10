@@ -29,16 +29,16 @@ module.exports = async (kojo, logger) => {
         if (!email)
             throw new UnprocessableEntity('no email in profile');
 
-        const existingPlayer = await tasu.request('player.identify', {email});
+        const existingPlayer = await tasu.request('identifyPlayer', {email});
         let player;
         if (existingPlayer) {
             logger.debug('existing player, issuing token', existingPlayer);
             player = existingPlayer;
         } else {
             logger.debug('new player, registering', email);
-            const id = await tasu.request('player.id', {});
+            const id = await tasu.request('generateId.player', {});
             player = {id, email, name};
-            await stair.write('player.register', player);
+            await stair.write('registerPlayer', player);
         }
         const {frontend: {entrypoint}, jwt: {secret}} = config;
 

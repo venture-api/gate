@@ -1,26 +1,22 @@
-const {Conflict} = require('http-errors');
-const issueJWT = require('../util/issueJWT');
-
-
 module.exports = async (gate, logger) => {
 
-    const {fastify, tasu, stair, config} = gate.get();
+    const {fastify, tasu, stair} = gate.get();
     const {middleware} = gate.modules;
 
     const conf = {
-        beforeHandler: await middleware.authorize('factory')
+        beforeHandler: await middleware.authorize()
     };
 
     fastify.post('/resources', conf, async(req, res) => {
 
-        const {id: location, type, code, ownerId, region} = req.factory;
+        const {id: location, type, resourseType, code, ownerId, region} = req.facility;
 
         logger.debug('generating resource ID');
-        const id = await tasu.request('resource.id', {type, code});
+        const id = await tasu.request('generateId.resource', {type: resourseType, code});
 
         // get region for defects
         logger.debug('getting regional defects for:', region);
-        const {defects} = await tasu.request('region.get', {name: region});
+        const {defects} = await tasu.request('getRegion', {name: region});
         const newResource = {
             id,
             ownerId,
@@ -31,7 +27,7 @@ module.exports = async (gate, logger) => {
             producedAt: location
         };
         logger.info('creating resource:', type, id);
-        const guid = await stair.write('resource.create', newResource);
+        const guid = await stair.write('createResource', newResource);
 
         res.header('x-guid', guid);
         res.code(201);

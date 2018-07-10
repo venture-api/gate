@@ -1,5 +1,8 @@
 const assert = require('assert');
-const {players: {bonner}, factories: {rdrn}, regions, resources} = require('@venture-api/fixtures');
+const {bonner} = require('@venture-api/fixtures/fixtures/player');
+const {rdrn, boex} = require('@venture-api/fixtures/fixtures/facility');
+const {ironOne} = require('@venture-api/fixtures/fixtures/resource');
+const regions = require('@venture-api/fixtures/fixtures/region');
 
 
 module.exports = (tasu) => {
@@ -8,28 +11,33 @@ module.exports = (tasu) => {
         return {status: 'ok', id: 'MOLD-001'}
     });
 
-    tasu.listen('player.identify', ({email}) => {
+    tasu.listen('identifyPlayer', ({email}) => {
         assert(email);
         return null;
     });
 
-    tasu.listen('player.get', ({id}) => {
+    tasu.listen('getPlayer', ({id}) => {
         assert(id);
         bonner.id = id;
         return bonner;
     });
 
-    tasu.listen('factory.get', ({id}) => {
+    tasu.listen('getFacility', ({id}) => {
         assert(id);
-        if (id === rdrn.id) return rdrn;
+        switch (id) {
+            case rdrn.id:
+                return rdrn;
+            case boex.id:
+                return boex;
+        }
     });
 
-    tasu.listen('region.get', ({name}) => {
+    tasu.listen('getRegion', ({name}) => {
         assert(name);
         return regions[name];
     });
 
-    tasu.listen('factory.identify', ({code}) => {
+    tasu.listen('identifyFacility', ({code}) => {
         assert(code);
         if (code === rdrn.code) return null;
     });
@@ -39,16 +47,16 @@ module.exports = (tasu) => {
         return true;
     });
 
-    tasu.listen('player.id', ({}) => {
-        return 'PL-YSL6H3DNRON2';
+    tasu.listen('generateId.player', ({}) => {
+        return bonner.id;
     });
 
-    tasu.listen('factory.id', ({}) => {
-        return 'FC-WTQA6GN3DK27IT-GN';
+    tasu.listen('generateId.facility', ({}) => {
+        return rdrn.id;
     });
 
-    tasu.listen('resource.id', ({}) => {
-        return resources.ironOne.id;
+    tasu.listen('generateId.resource', ({}) => {
+        return ironOne.id;
     });
 
 
