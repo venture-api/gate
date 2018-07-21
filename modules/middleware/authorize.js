@@ -1,25 +1,19 @@
 const jwt = require('jsonwebtoken');
-const {BadRequest, Unauthorized} = require('http-errors');
 const {promisify} = require('util');
+const {BadRequest, Unauthorized} = require('http-errors');
 const capitalize = require('../../util/capitalize');
 
 
-const ACTION_MAP = {
-    get: 'read',
-    post: 'create',
-    patch: 'update',
-    delete: 'delete'
-};
 const verify = promisify(jwt.verify);
 
-module.exports = function (details=null) {
+module.exports = function (permission) {
 
     const {kojo, logger} = this;
     const {tasu, config} = kojo.get();
 
     return async (req) => {
 
-        const {raw: {method, url}} = req;
+        const {params} = req;
 
         if (!req.headers.authorization)
             throw new BadRequest('no authorization header');
@@ -45,7 +39,7 @@ module.exports = function (details=null) {
             throw new BadRequest('no id in token payload');
 
         // authenticate
-        logger.debug('authenticating', type, id);
+        logger.debug('identifying principal', type, id);
         const principal = await tasu.request(`get${capitalize(type)}`, {id});
 
         if (!principal)
@@ -54,12 +48,11 @@ module.exports = function (details=null) {
         req[type] = principal;
 
         // authorize
-        const action = ACTION_MAP[method.toLowerCase()];
-        logger.debug('authorizing:', type, principal.id, action, url, details);
-        const accessRecord = [principal.id, action, url, details];
-        const can = await tasu.request('acl.can', accessRecord);
+        const elementId = params.id;
+        logger.debug('authorizing:', principal.id, permission, elementId);
+        const can = await tasu.request('checkACE', [principal.id, permission, elementId]);
 
         if (!can)
-            throw new Unauthorized('authorization failed', accessRecord);
+            throw new Unauthorized('authorization failed');
     }
 };

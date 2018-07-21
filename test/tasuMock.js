@@ -42,7 +42,7 @@ module.exports = (tasu) => {
         if (code === rdrn.code) return null;
     });
 
-    tasu.listen('acl.can', (accessRecord) => {
+    tasu.listen('checkACE', (accessRecord) => {
         assert(accessRecord);
         return true;
     });

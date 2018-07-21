@@ -1,7 +1,7 @@
 const {Conflict} = require('http-errors');
 const issueJWT = require('../util/issueJWT');
 const {name} = require('@venture-api/fixtures/schemata/facility');
-const {factory, warehouse} = require('@venture-api/fixtures/constants/facility');
+const {factory, warehouse} = require('@venture-api/fixtures/dictionary');
 
 
 module.exports = async (gate, logger) => {
