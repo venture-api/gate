@@ -1,5 +1,3 @@
-const Fastify = require('fastify');
-const formbody = require('fastify-formbody');
 const simpleOAuth2 = require('simple-oauth2');
 const Kojo = require('kojo');
 const configLoader = require('yt-config');
@@ -15,16 +13,9 @@ module.exports = async () => {
     const gate = new Kojo(config.kojo);
     gate.set('config', config);
 
-    // Fastify
-    const fastify = Fastify({});
-    fastify.setErrorHandler((error, req, res) => {
-        const {params, query, body} = req;
-        res.send(error);
-        console.log(req.raw.method, req.raw.originalUrl, {params, query, body});
-        console.error(error);
-    });
-    fastify.register(formbody);
-    gate.set('fastify', fastify);
+    // HTTP Router
+    gate.set('routes', {});
+
 
     // Tasu
     const tasu = new Tasu(config.tasu);
@@ -44,6 +35,10 @@ module.exports = async () => {
     gate.set('oauth', oauth);
 
     await gate.ready();
-    await fastify.listen(config.http.port);
+
+    const {http} = gate.modules;
+    const server = await http.listen();
+    gate.set('httpServer', server);
+
     return gate;
 };

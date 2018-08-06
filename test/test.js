@@ -12,7 +12,7 @@ const {ironOne} = require('@venture-api/fixtures/fixtures/resource');
 let tasu;
 let stair;
 let entrypoint;
-let fastify;
+let httpServer;
 let playerJWT;
 let factoryJWT;
 
@@ -21,7 +21,7 @@ before(async function ()  {
         const gate = await Bootstrap();
         tasu = gate.get('tasu');
         stair = gate.get('stair');
-        fastify = gate.get('fastify');
+        httpServer = gate.get('httpServer');
         const {http: {host, port}} = gate.get('config');
         entrypoint = `http://${host}:${port}`;
         TasuMock(tasu);
@@ -33,7 +33,7 @@ before(async function ()  {
 after(async function () {
 
     console.log('> stopping test server');
-    fastify.close();
+    httpServer.close();
     tasu.close();
     stair.close();
 });
