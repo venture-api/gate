@@ -15,6 +15,7 @@ module.exports = async function (req, res) {
     const {kojo, logger} = this;
     const {method, url} = req;
     logger.debug('processing', method, url);
+    const start = process.hrtime();
     const {pathname} = URL.parse(url, true);
     const trimmedPath = pathname.replace(/\/+$/g, '');
     const routes = kojo.get('routes');
@@ -37,7 +38,11 @@ module.exports = async function (req, res) {
     try {
         const routeHandler = routes[trimmedPath][method];
         res.setHeader('Content-Type', 'application/json');
-        res.end(JSON.stringify(await routeHandler(req, res)));
+        const JSONstring = JSON.stringify(await routeHandler(req, res));
+        const length = Buffer.byteLength(JSONstring);
+        res.setHeader('Content-Length', length);
+        logger.info('response OK', res.statusCode, length, Number.parseFloat(process.hrtime(start)[0] + process.hrtime(start)[1]*1e-9).toFixed(5));
+        res.end(JSONstring);
     } catch (error) {
         logger.error(error);
         res.writeHead(500);
