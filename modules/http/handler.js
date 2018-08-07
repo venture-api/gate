@@ -19,14 +19,19 @@ module.exports = async function (req, res) {
     const reqID = trid.seq();
     logger.debug(`<- [${reqID}] ${method} ${url}`);
     const start = process.hrtime();
+
+    // the router :)
     const {pathname} = URL.parse(url, true);
-    const trimmedPath = pathname.replace(/\/+$/g, '');
+    const trimmedPath = pathname.replace(/^\/+|\/+$/g, '');
+    const [major, resID, minor] = trimmedPath.split('/');
+    const routePattern = '/' + [major, resID ? ':id' : undefined, minor].filter(p => p).join('/');
+
     const routes = kojo.get('routes');
     res.sendDate = true;
     res.setHeader('X-Request-ID', reqID);
 
     // 404 pathname not found
-    if (!routes[trimmedPath]) {
+    if (!routes[routePattern]) {
         const statusCode = 404;
         res.writeHead(statusCode);
         res.end(http.STATUS_CODES[statusCode]);
@@ -35,7 +40,7 @@ module.exports = async function (req, res) {
     }
 
     // 405 method not found (thus not allowed)
-    if (routes[trimmedPath] && !routes[trimmedPath][method]) {
+    if (routes[routePattern] && !routes[routePattern][method]) {
         const statusCode = 405;  // TODO abstract into some error response?
         res.writeHead(statusCode);
         res.end(http.STATUS_CODES[statusCode]);
@@ -44,7 +49,9 @@ module.exports = async function (req, res) {
     }
 
     try {
-        const routeHandler = routes[trimmedPath][method];
+        const routeHandler = routes[routePattern][method];
+        if (resID)
+            req.params = {id: resID};
         res.setHeader('Content-Type', 'application/json');
         const JSONstring = JSON.stringify(await routeHandler(req, res));
         const length = Buffer.byteLength(JSONstring);
