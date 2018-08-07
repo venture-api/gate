@@ -3,6 +3,7 @@ const Kojo = require('kojo');
 const configLoader = require('yt-config');
 const Tasu = require('tasu');
 const Stair = require('stair');
+const TRID = require('trid');
 
 
 module.exports = async () => {
@@ -16,6 +17,8 @@ module.exports = async () => {
     // HTTP Router
     gate.set('routes', {});
 
+    // trid
+    gate.set('trid', new TRID({prefix: gate.id, length: 4}));
 
     // Tasu
     const tasu = new Tasu(config.tasu);
