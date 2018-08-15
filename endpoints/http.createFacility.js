@@ -6,8 +6,8 @@ const {factory, warehouse} = require('@venture-api/fixtures/dictionary');
 
 module.exports = async (gate, logger) => {
 
-    const {fastify, tasu, stair, config} = gate.get();
-    const {middleware} = gate.modules;
+    const {tasu, stair, config} = gate.get();
+    const {http, middleware} = gate.modules;
 
     const conf = {
         schema: {
@@ -20,13 +20,16 @@ module.exports = async (gate, logger) => {
                 },
                 required: ['name', 'code', 'type']
             }
-        },
-        beforeHandler: await middleware.authorize()
+        }
     };
 
-    fastify.post('/facilities', conf, async(req, res) => {
+    http.route({
+        method: 'POST',
+        pathname: '/facilities',
+        access: ['playerId', 'create', 'facility']
+    }, async(req, res) => {
 
-        const {player, body: {code, type, name}} = req;
+        const {player, json: {code, type, name}} = req;
         const {id: ownerId} = player;
         const {jwt: {secret}} = config;
 

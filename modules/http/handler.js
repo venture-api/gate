@@ -1,7 +1,6 @@
-const http = require('http');
-const URL = require('url');
 const {StringDecoder} = require('string_decoder');
 const HRT2sec = require('../../util/HRT2sec');
+const ReqError = require('../../util/ReqError');
 
 
 /**
@@ -17,37 +16,15 @@ module.exports = async function (req, res) {
     const {kojo, logger} = this;
     const {method, url} = req;
     const trid = kojo.get('trid');
+    const {middleware, http} = kojo.modules;
     const reqID = trid.seq();
     logger.debug(`<- [${reqID}] ${method} ${url}`);
     const start = process.hrtime();
 
-    // the router :)
-    const {pathname} = URL.parse(url, true);
-    const trimmedPath = pathname.replace(/^\/+|\/+$/g, '');
-    const [major, resID, minor] = trimmedPath.split('/');
-    const routePattern = '/' + [major, resID ? ':id' : undefined, minor].filter(p => p).join('/');
-
-    const routes = kojo.get('routes');
+    // set general headers
     res.sendDate = true;
     res.setHeader('X-Request-ID', reqID);
-
-    // 404 pathname not found
-    if (!routes[routePattern]) {
-        const statusCode = 404;
-        res.writeHead(statusCode);
-        res.end(http.STATUS_CODES[statusCode]);
-        logger.error(`!! [${reqID}] ${res.statusCode} ${http.STATUS_CODES[statusCode]}`);
-        return
-    }
-
-    // 405 method not found (thus not allowed)
-    if (routes[routePattern] && !routes[routePattern][method]) {
-        const statusCode = 405;  // TODO abstract into some error response?
-        res.writeHead(statusCode);
-        res.end(http.STATUS_CODES[statusCode]);
-        logger.error(`!! [${reqID}] ${res.statusCode} ${http.STATUS_CODES[statusCode]}`);
-        return
-    }
+    res.setHeader('Content-Type', 'application/json');
 
     // capture body
     const decoder = new StringDecoder('utf-8');
@@ -65,7 +42,8 @@ module.exports = async function (req, res) {
 
     // general request handling
     try {
-        const routeHandler = routes[routePattern][method];
+        // extract endpoint config
+        const {handler, access} = http.routing(method, url);
         if (resID)
             req.params = {id: resID};
         const contentType = req.headers['content-type'];
@@ -75,18 +53,30 @@ module.exports = async function (req, res) {
             req.json = JSON.parse(body);
         }
 
-        // call handler
-        const JSONstring = JSON.stringify(await routeHandler(req, res));
+        // run authorization if any
+        if (access) {
+            req[principalType] = await middleware.authorize(principalType);
+        }
 
-        // form response
+        // call handler
+        const JSONstring = JSON.stringify(await handler(req, res));
+
+        // OK response
         const length = Buffer.byteLength(JSONstring);
-        res.setHeader('Content-Type', 'application/json');
         res.setHeader('Content-Length', length);
         logger.debug(`-> [${reqID}] ${res.statusCode} / ${length} bytes / ${HRT2sec(process.hrtime(start))} sec`);
         res.end(JSONstring);
+
     } catch (error) {
+
+        // error response
         logger.error(`!! [${reqID}]`, error);
-        res.writeHead(500);
-        res.end(http.STATUS_CODES[500]);
+        if (error instanceof ReqError) {
+            res.writeHead(error.statusCode);
+            res.end(JSON.stringify({message: error.message}));
+        } else {
+            res.writeHead(500);
+            res.end('Unexpected error');
+        }
     }
 };
