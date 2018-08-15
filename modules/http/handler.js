@@ -1,5 +1,6 @@
 const http = require('http');
 const URL = require('url');
+const {StringDecoder} = require('string_decoder');
 const HRT2sec = require('../../util/HRT2sec');
 
 
@@ -48,13 +49,38 @@ module.exports = async function (req, res) {
         return
     }
 
+    // capture body
+    const decoder = new StringDecoder('utf-8');
+    let buffer = '';
+    req.on('data', (data) => {
+        buffer += decoder.write(data);
+    });
+    const bodyReady = new Promise(resolve => {
+        req.on('end', () => {
+            buffer += decoder.end();
+            resolve(buffer);
+        });
+    });
+    const body = await bodyReady; // TODO add content length limit!
+
+    // general request handling
     try {
         const routeHandler = routes[routePattern][method];
         if (resID)
             req.params = {id: resID};
-        res.setHeader('Content-Type', 'application/json');
+        const contentType = req.headers['content-type'];
+
+        // parse JSON body
+        if (contentType === 'application/json') {
+            req.json = JSON.parse(body);
+        }
+
+        // call handler
         const JSONstring = JSON.stringify(await routeHandler(req, res));
+
+        // form response
         const length = Buffer.byteLength(JSONstring);
+        res.setHeader('Content-Type', 'application/json');
         res.setHeader('Content-Length', length);
         logger.debug(`-> [${reqID}] ${res.statusCode} / ${length} bytes / ${HRT2sec(process.hrtime(start))} sec`);
         res.end(JSONstring);
