@@ -9,9 +9,9 @@ module.exports = function (method, url) {
     // routing
     const {pathname} = URL.parse(url, true);
     const trimmedPath = pathname.replace(/^\/+|\/+$/g, '');
-    logger.debug('looking up route', method, trimmedPath);
-    const [major, resID, minor] = trimmedPath.split('/');
-    const routePattern = '/' + [major, resID ? ':id' : undefined, minor].filter(p => p).join('/');
+    logger.debug('looking up route');
+    const [major, resourceId, minor] = trimmedPath.split('/');
+    const routePattern = '/' + [major, resourceId ? ':id' : undefined, minor].filter(p => p).join('/');
     const routes = kojo.get('routes');
 
     // 404 pathname not found
@@ -24,5 +24,5 @@ module.exports = function (method, url) {
         throw new ReqError(405);
     }
 
-    return routes[routePattern][method];
+    return {resourceId, major, minor,...routes[routePattern][method]};
 };

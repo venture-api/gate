@@ -12,7 +12,7 @@ module.exports = async function () {
     const {http: {port}} = kojo.get('config');
     const trid = kojo.get('trid');
     const {http: http_} = kojo.modules;
-    const server = http.createServer(http_.handler);
+    const server = http.createServer(http_.rootHandler);
     return new Promise(resolve => {
         server.listen(port, () => {
             logger.info(trid.base(), 'listening on port', port);

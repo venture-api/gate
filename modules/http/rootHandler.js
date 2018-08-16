@@ -42,10 +42,9 @@ module.exports = async function (req, res) {
 
     // general request handling
     try {
-        // extract endpoint config
-        const {handler, access} = http.routing(method, url);
-        if (resID)
-            req.params = {id: resID};
+        // extract endpoint config and parameters
+        const {resourceId, handler, access} = http.routing(method, url);
+        req.resourceId = resourceId;
         const contentType = req.headers['content-type'];
 
         // parse JSON body
