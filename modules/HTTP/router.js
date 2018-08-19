@@ -1,7 +1,14 @@
 const URL = require('url');
 const ReqError = require('../../util/ReqError');
 
-
+/**
+ * The router. Parses method and URL and performs a lookup for
+ * appropriate route (endpoint) handler.
+ *
+ * @param {string} method - request's method (uppercase)
+ * @param {string} url - request's URL
+ * @return {{major:string, resourceId:string, minor:string, ...}}
+ */
 module.exports = function (method, url) {
 
     const {kojo, logger} = this;
@@ -24,5 +31,5 @@ module.exports = function (method, url) {
         throw new ReqError(405);
     }
 
-    return {resourceId, major, minor,...routes[routePattern][method]};
+    return {major, resourceId, minor,...routes[routePattern][method]};
 };
