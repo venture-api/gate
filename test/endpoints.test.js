@@ -136,7 +136,7 @@ describe('endpoints', () => {
         });
 
         it('creates a new factory', async () => {
-            await stair.read('factory.create', ({id, name, code, type, ownerId}) => {
+            await stair.read('factory.create', ({ id, name, code, type, ownerId }) => {
                 assert.equal(name, rdrn.name);
                 assert.equal(code, rdrn.code);
                 assert.equal(type, rdrn.type);
@@ -146,12 +146,10 @@ describe('endpoints', () => {
             });
             const res = await request.post(`${entry}/facilities`, {
                 json: rdrn,
-                headers: {
-                    'Authorization': `Bearer ${playerJWT}`
-                },
+                headers: { 'Authorization': `Bearer ${playerJWT}` },
                 resolveWithFullResponse: true
             });
-            const {name, code, type, ownerId, id} = res.body;
+            const { name, code, type, ownerId, id } = res.body;
             assert.equal(res.statusCode, 201);
             assert.equal(name, rdrn.name);
             assert.equal(code, rdrn.code);

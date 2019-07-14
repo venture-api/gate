@@ -1,11 +1,12 @@
 const issueJWT = require('../util/issueJWT');
-const {name} = require('@venture-api/fixtures/schemata/facility');
-const {factory, warehouse} = require('@venture-api/fixtures/dictionary');
+const { name } = require('@venture-api/fixtures/schemata/facility');
+const { factory, warehouse } = require('@venture-api/fixtures/dictionary');
 
 
 module.exports = async (gate, logger) => {
 
     const { tasu, stair, config } = gate.state;
+    const { jwt: { secret }} = config;
     const { HTTP } = gate.services;
 
     const conf = {
@@ -25,12 +26,11 @@ module.exports = async (gate, logger) => {
     HTTP.addRoute({
         method: 'POST',
         pathname: '/facilities',
-        access: ['playerId', 'create', 'facility']
+        access: [ 'playerId', 'create', 'facility' ]
     }, async(req, res) => {
 
-        const {player, json: {code, type, name}} = req;
-        const {id: ownerId} = player;
-        const {jwt: {secret}} = config;
+        const { player, body: { code, type, name }} = req;
+        const { id: ownerId } = player;
 
         logger.debug('checking existing facilities', {code});
         const factory = await tasu.request('identifyFacility', {code});
@@ -41,7 +41,7 @@ module.exports = async (gate, logger) => {
         }
 
         const id = await tasu.request('generateId.facility', {entity: 'facility', type: 'factory', code});
-        const newFacility = {id, name, ownerId, type, code};
+        const newFacility = { id, name, ownerId, type, code };
 
         logger.info('creating facility', type, id);
         const guid = await stair.write('createFacility', newFacility);

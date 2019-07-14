@@ -19,19 +19,19 @@ const verify = promisify(jwt.verify);
  */
 module.exports = async function (req, access) {
 
-    const {kojo, logger} = this;
-    const {tasu, config} = kojo.get();
+    const [ gate, logger ] = this;
+    const { tasu, config } = gate.state;
 
-    if (!req.headers.authorization)
+    if (! req.headers.authorization)
         throw new ReqError(400, 'No authorization header');
 
     const token = req.headers.authorization.split('Bearer ')[1];
     logger.debug('checking token presence');
 
-    if (!token)
+    if (! token)
         throw new ReqError(400, 'No authorization token');
 
-    const {jwt: {secret}} = config;
+    const { jwt: { secret }} = config;
     logger.debug('verifying token', token);
     let tokenPayload;
 
@@ -41,14 +41,14 @@ module.exports = async function (req, access) {
         throw new ReqError(400, 'Token verification failed');
     }
     // extract principal ID
-    const {[payloadMap.principalId]: principalId} = tokenPayload;
+    const { [payloadMap.principalId]: principalId } = tokenPayload;
 
-    if (!principalId)
+    if (! principalId)
         throw new ReqError(400, 'No principal ID in token payload');
 
     // authorize
-    const {type: principalType} = idMeta(principalId);
-    const [principalField, action, resource] = access;
+    const { type: principalType } = idMeta(principalId);
+    const [ principalField, action, resource ] = access;
 
     if (`${principalType}Id` !== principalField) {
         // token principal type doesn't match endpoint principal type
@@ -56,9 +56,12 @@ module.exports = async function (req, access) {
         throw new ReqError(400, 'Principal type mismatch');
     }
 
-    logger.debug('authorizing', type, principalId, action, resource);
-    const can = await tasu.request('checkACE', [principalId, action, resource]);
+    logger.debug('authorizing', principalType, principalId, action, resource);
+    const can = await tasu.request('checkACE', [ principalId, action, resource ]);
 
-    if (!can)
+    if (! can)
         throw new ReqError(403, 'Access denied');
+
+    // fetch & attach authorized principal
+    req[principalType] = await tasu.request('identify', [ principalField, principalId ]);
 };

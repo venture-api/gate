@@ -76,7 +76,7 @@ module.exports = async function (req, res) {
     } catch (error) {
 
         // error response
-        logger.error(`!! [${reqID}]`, error.message);
+        logger.error(`!! [${reqID}] ${error.statusCode ? error.statusCode : ''}`, error.message);
 
         if (error instanceof ReqError) {
             res.writeHead(error.statusCode);
