@@ -19,7 +19,7 @@ module.exports = async (gate, logger) => {
         const service = req.resourceId;
         if (service === 'mock' && !['test', 'ci'].includes(environment))
             throw new Error('Mock service is only allowed in test environment');
-        logger.debug('authenticating via', service);
+        logger.debug('authenticating via:', service);
         const authorizationUri = oauth[service].authorizationCode.authorizeURL({
             redirect_uri: `${entrypoint}/oauth/${service}/callback`
         });

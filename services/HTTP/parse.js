@@ -1,14 +1,28 @@
+const querystring = require('querystring');
 const ReqError = require('../../util/ReqError');
 
 
 module.exports = function (body, contentType) {
 
-    if (!body)
-        return;
+    const [ gate, logger ] = this;
 
-    if (contentType === 'application/json') {
-        return JSON.parse(body);
-    } else {
-        throw new ReqError(400, 'Unexpected content type');
+    if (! body) return;
+
+    let result;
+    switch (contentType) {
+
+        case 'application/json':
+            result = JSON.parse(body);
+            break;
+
+        case 'application/x-www-form-urlencoded':
+            result = querystring.parse(body);
+            break;
+
+        default:
+            throw new ReqError(400, 'Unexpected content type');
     }
+
+    logger.debug('parsed', JSON.stringify(result));
+    return result;
 };

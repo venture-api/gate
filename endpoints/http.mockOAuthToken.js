@@ -10,7 +10,7 @@ module.exports = async (gate, logger) => {
         pathname: '/mock-oauth-token'
     }, async (req) => {
 
-        const {code} = req.json;
+        const { code } = req.body;
 
         logger.debug('issuing token for', code);
         return {

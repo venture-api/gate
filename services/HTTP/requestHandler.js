@@ -21,7 +21,7 @@ module.exports = async function (req, res) {
 
     const reqID = trid.seq();
     logger.debug(`<- [${reqID}] ${method} ${url}`);
-    logger.debug('content-type is', req.headers['content-type']);
+    req.headers['content-type'] && logger.debug('content-type is', req.headers['content-type']);
     const start = process.hrtime();
 
     // set general headers
@@ -76,11 +76,13 @@ module.exports = async function (req, res) {
     } catch (error) {
 
         // error response
-        logger.error(`!! [${reqID}]`, error);
+        logger.error(`!! [${reqID}]`, error.message);
+
         if (error instanceof ReqError) {
             res.writeHead(error.statusCode);
             res.end(JSON.stringify({message: error.message}));
         } else {
+            logger.error(error.stack);
             res.writeHead(500);
             res.end('Unexpected error');
         }
