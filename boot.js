@@ -39,9 +39,8 @@ module.exports = async () => {
 
     await gate.ready();
 
-    const {http} = gate.modules;
-    const server = await http.listen();
-    gate.set('httpServer', server);
+    const { HTTP } = gate.services;
+    gate.set('httpServer', await HTTP.listen());
 
     return gate;
 };

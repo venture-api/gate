@@ -1,9 +1,9 @@
 module.exports = async (gate, logger) => {
 
-    const {http} = gate.modules;
-    const tasu = gate.get('tasu');
+    const { HTTP } = gate.services;
+    const { tasu } = gate.state;
 
-    http.route({
+    HTTP.addRoute({
         method: 'GET',
         pathname: '/status'
     }, async() => {

@@ -1,4 +1,3 @@
-const {Conflict} = require('http-errors');
 const issueJWT = require('../util/issueJWT');
 const {name} = require('@venture-api/fixtures/schemata/facility');
 const {factory, warehouse} = require('@venture-api/fixtures/dictionary');
@@ -6,8 +5,8 @@ const {factory, warehouse} = require('@venture-api/fixtures/dictionary');
 
 module.exports = async (gate, logger) => {
 
-    const {tasu, stair, config} = gate.get();
-    const {http, middleware} = gate.modules;
+    const { tasu, stair, config } = gate.state;
+    const { HTTP } = gate.services;
 
     const conf = {
         schema: {
@@ -23,7 +22,7 @@ module.exports = async (gate, logger) => {
         }
     };
 
-    http.route({
+    HTTP.addRoute({
         method: 'POST',
         pathname: '/facilities',
         access: ['playerId', 'create', 'facility']

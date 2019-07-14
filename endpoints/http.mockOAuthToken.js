@@ -3,11 +3,14 @@ const {bonner} = require('@venture-api/fixtures/fixtures/player');
 
 module.exports = async (gate, logger) => {
 
-    const {fastify} = gate.get();
+    const { HTTP } = gate.services;
 
-    fastify.post('/mock/oauth/token', async (req) => {
+    HTTP.addRoute({
+        method: 'POST',
+        pathname: '/mock-oauth-token'
+    }, async (req) => {
 
-        const {code} = req.body;
+        const {code} = req.json;
 
         logger.debug('issuing token for', code);
         return {

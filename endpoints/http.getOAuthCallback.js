@@ -1,10 +1,11 @@
 const issueJWT = require('../util/issueJWT');
-const {UnprocessableEntity} = require('http-errors');
+const ReqError = require('../util/ReqError');
 
 
-module.exports = async (kojo, logger) => {
+module.exports = async (gate, logger) => {
 
-    const {fastify, config, oauth, stair, tasu} = kojo.get();
+    const { config, oauth, stair, tasu } = gate.state;
+    const { HTTP } = gate.services;
 
     const schema = {
         params: {
@@ -15,9 +16,12 @@ module.exports = async (kojo, logger) => {
         }
     };
 
-    fastify.get('/oauth/:service/callback', {schema}, async(req, res) => {
+    HTTP.addRoute({
+        method: 'GET',
+        pathname: '/oauth/:id/callback'
+    }, async(req, res) => {
 
-        const {service} = req.params;
+        const service = req.resourceId;
         const {code} = req.query;
         logger.debug(`processing '${service}' callback`);
         const result = await oauth[service].authorizationCode.getToken({code});
@@ -27,7 +31,7 @@ module.exports = async (kojo, logger) => {
         const [email] = emails;
 
         if (!email)
-            throw new UnprocessableEntity('no email in profile');
+            throw new ReqError(422, 'No email in profile');
 
         const existingPlayer = await tasu.request('identifyPlayer', {email});
         let player;
@@ -43,6 +47,9 @@ module.exports = async (kojo, logger) => {
         const {frontend: {entrypoint}, jwt: {secret}} = config;
 
         const jwt = await issueJWT({t: 'player', i: player.id}, secret);
-        res.redirect(`${entrypoint}/login?token=${jwt}`);
+        res.writeHead(302, {
+            'Location': `${entrypoint}/login?token=${jwt}`
+        });
+        res.end();
     });
 };

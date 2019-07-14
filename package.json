@@ -5,7 +5,7 @@
   "main": "main.js",
   "private": true,
   "scripts": {
-    "start": "node main.js",
+    "start": "node index.js",
     "test": "mocha test",
     "nats": "export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && gnatsd -DV",
     "stan": "export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && nats-streaming-server -p 4223 -DV"
@@ -17,20 +17,18 @@
   "license": "UNLICENSED",
   "dependencies": {
     "@venture-api/fixtures": "^5.0.0",
-    "body-parser": "^1.18.3",
-    "chai": "^4.1.2",
-    "http-errors": "^1.7.0",
-    "jsonwebtoken": "^8.3.0",
-    "kojo": "^4.3.1",
+    "chai": "^4.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "kojo": "^7.0.0",
     "mocha": "^5.2.0",
     "nock": "^9.6.1",
-    "nyc": "^12.0.2",
+    "nyc": "^14.1.1",
     "request": "^2.88.0",
-    "request-promise-native": "^1.0.5",
+    "request-promise-native": "^1.0.7",
     "simple-oauth2": "^2.2.1",
     "stair": "^0.4.2",
-    "tasu": "^4.2.3",
+    "tasu": "^4.3.0",
     "trid": "^0.1.1",
-    "yt-config": "^3.0.1"
+    "yt-config": "^3.1.0"
   }
 }
