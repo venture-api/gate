@@ -1,56 +1,58 @@
-const issueJWT = require('../util/issueJWT');
-const { name } = require('@venture-api/fixtures/schemata/facility');
-const { factory, warehouse } = require('@venture-api/fixtures/dictionary');
+const { Conflict } = require('http-errors');
+const { name, code, type } = require('@venture-api/fixtures/schemata/facility');
+const w = require('@venture-api/fixtures/dictionary');
 
 
 module.exports = async (gate, logger) => {
 
-    const { tasu, stair, config } = gate.state;
-    const { jwt: { secret }} = config;
+    const { tasu, stair } = gate.state;
     const { HTTP } = gate.services;
 
-    const conf = {
+    HTTP.addRoute({
+
+        method: 'POST',
+        pathname: `/${w.facilities}`,
+        access: [ 'playerId', 'create', w.facility ],
         schema: {
             body: {
                 type: 'object',
-                properties: {
-                    name,
-                    code: {type: 'string', minLength: 3, maxLength: 6},
-                    type: {type: 'string', enum: [factory, warehouse]},
-                },
-                required: ['name', 'code', 'type']
+                properties: { name, code, type },
+                required: [ 'name', 'type' ]
             }
         }
-    };
-
-    HTTP.addRoute({
-        method: 'POST',
-        pathname: '/facilities',
-        access: [ 'playerId', 'create', 'facility' ]
     }, async(req, res) => {
 
-        const { player, body: { code, type, name }} = req;
+        const { player, body: { code: customCode, type, name }} = req;
         const { id: ownerId } = player;
+        let generatedCode;
 
-        logger.debug('checking existing facilities', {code});
-        const factory = await tasu.request('identifyFacility', {code});
+        if (customCode) {
+            logger.debug(`checking existing ${w.facilities} with code`, customCode);
+            const facility = await tasu.request('identify', { code: customCode });
 
-        if (factory) {
-            res.header('Location', `/facilities/${code}`);
-            throw new Conflict(`facility with code ${code} already exists`);
+            if (facility) {
+                res.header('Location', `/${w.facilities}/${customCode}`);
+                throw new Conflict(`${w.facility} with code ${customCode} already exists`);
+            }
+        } else {
+            logger.debug('generating code');
+            generatedCode = tasu.request(`${w.facility}.code.generate`, { type, name, ownerId });
         }
 
-        const id = await tasu.request('generateId.facility', {entity: 'facility', type: 'factory', code});
-        const newFacility = { id, name, ownerId, type, code };
+        logger.debug('generating unique id');
+        const code = customCode || generatedCode;
+        const id = await tasu.request(`${w.facility}.id.generate`, { type });
 
-        logger.info('creating facility', type, id);
-        const guid = await stair.write('createFacility', newFacility);
-        const token = await issueJWT({t: 'facility', i: id}, secret);
+        logger.info(`dispatching ${w.facility} creation`, id);
+        const guid = await stair.write(`${w.facility}.create`, { id, name, ownerId, code });
+        res.setHeader('x-guid', guid);
 
-        res.header('x-guid', guid);
-        res.header('x-token', token);
-        res.code(201);
+        logger.debug(`requesting token`);
+        const token = await tasu.request('token.sign', { id });
 
-        return newFacility;
+        res.setHeader('x-token', token);
+        res.statusCode = 201;
+
+        return { id, name, ownerId, code, type };
     })
 };

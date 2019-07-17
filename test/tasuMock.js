@@ -11,35 +11,35 @@ module.exports = (tasu) => {
         return {status: 'ok', id: 'MOLD-001'}
     });
 
-    tasu.listen('identifyPlayer', ({email}) => {
-        assert(email);
-        return null;
+    tasu.listen('token.sign', () => {
+        return 'FAKEJWT';
     });
 
-    tasu.listen('getPlayer', ({id}) => {
-        assert(id);
-        bonner.id = id;
-        return bonner;
-    });
+    tasu.listen('identify', ({ email, id, code }) => {
 
-    tasu.listen('getFacility', ({id}) => {
-        assert(id);
+        if (email) {
+            return null;
+        }
+
         switch (id) {
+            case bonner.id:
+                return bonner;
             case rdrn.id:
                 return rdrn;
             case boex.id:
                 return boex;
         }
+
+        if (code === rdrn.code)
+            return null;
+
+        return null;
+
     });
 
     tasu.listen('getRegion', ({name}) => {
         assert(name);
         return regions[name];
-    });
-
-    tasu.listen('identifyFacility', ({code}) => {
-        assert(code);
-        if (code === rdrn.code) return null;
     });
 
     tasu.listen('checkACE', (accessRecord) => {
@@ -51,7 +51,7 @@ module.exports = (tasu) => {
         return bonner.id;
     });
 
-    tasu.listen('generateId.facility', ({}) => {
+    tasu.listen('facility.id.generate', ({}) => {
         return rdrn.id;
     });
 

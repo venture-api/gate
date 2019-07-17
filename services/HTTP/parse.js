@@ -1,5 +1,5 @@
 const querystring = require('querystring');
-const ReqError = require('../../util/ReqError');
+const { BadRequest } = require('http-errors');
 
 
 module.exports = function (body, contentType) {
@@ -20,7 +20,7 @@ module.exports = function (body, contentType) {
             break;
 
         default:
-            throw new ReqError(400, 'Unexpected content type');
+            throw new BadRequest('Unexpected content type');
     }
 
     logger.debug('parsed', JSON.stringify(result));

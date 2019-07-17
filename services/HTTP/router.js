@@ -1,5 +1,5 @@
 const URL = require('url');
-const ReqError = require('../../util/ReqError');
+const { MethodNotAllowed, NotFound } = require('http-errors');
 
 /**
  * The router. Parses method and URL and performs a lookup for
@@ -22,13 +22,13 @@ module.exports = function (method, url) {
     const { routes } = gate.state;
 
     // 404 pathname not found
-    if (!routes[routePattern]) {
-        throw new ReqError(404, 'pathname not found');
+    if (! routes[routePattern]) {
+        throw new NotFound('Pathname not found');
     }
 
     // 405 method not found (thus not allowed)
-    if (routes[routePattern] && !routes[routePattern][method]) {
-        throw new ReqError(405, 'method not allowed');
+    if (routes[routePattern] && ! routes[routePattern][method]) {
+        throw new MethodNotAllowed('Not allowed: ' + method);
     }
 
     return {major, resourceId, minor, query, ...routes[routePattern][method]};

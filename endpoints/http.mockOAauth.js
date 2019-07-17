@@ -1,4 +1,4 @@
-const ReqError = require('../util/ReqError');
+const { BadRequest } = require('http-errors');
 
 
 module.exports = async (gate, logger) => {
@@ -18,10 +18,10 @@ module.exports = async (gate, logger) => {
         const registeredURIs = [`${scheme}://${host}:${port}/oauth/mock/callback`];
 
         if (! registeredURIs.includes(redirect_uri))
-            throw new ReqError(400, 'Bad redirect_uri');
+            throw new BadRequest('Bad redirect uri');
 
         if (client_id !== 'MOCK_CLIENT_ID')
-            throw new ReqError(400, 'Bad client id');
+            throw new BadRequest('Bad client ID');
 
         logger.debug('redirecting to', redirect_uri);
         res.writeHead(302, {'Location': `${redirect_uri}?code=AUTHORZTN_CODE&scope=${scope}`});

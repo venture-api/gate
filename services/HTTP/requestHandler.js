@@ -1,6 +1,6 @@
-const {StringDecoder} = require('string_decoder');
+const { StringDecoder } = require('string_decoder');
+const { HttpError } = require('http-errors');
 const HRT2sec = require('../../util/HRT2sec');
-const ReqError = require('../../util/ReqError');
 
 
 /**
@@ -78,9 +78,9 @@ module.exports = async function (req, res) {
         // error response
         logger.error(`!! [${reqID}] ${error.statusCode ? error.statusCode : ''}`, error.message);
 
-        if (error instanceof ReqError) {
+        if (error instanceof HttpError) {
             res.writeHead(error.statusCode);
-            res.end(JSON.stringify({message: error.message}));
+            res.end(JSON.stringify({ message: error.message }));
         } else {
             logger.error(error.stack);
             res.writeHead(500);

@@ -1,5 +1,6 @@
 const issueJWT = require('../util/issueJWT');
-const ReqError = require('../util/ReqError');
+const w = require('@venture-api/fixtures/dictionary');
+const { UnprocessableEntity } = require('http-errors');
 
 
 module.exports = async (gate, logger) => {
@@ -23,6 +24,7 @@ module.exports = async (gate, logger) => {
 
         const service = req.resourceId;
         const {code} = req.query;
+
         logger.debug(`processing '${service}' callback`);
         const result = await oauth[service].authorizationCode.getToken({code});
         const {token} = oauth[service].accessToken.create(result);
@@ -31,10 +33,12 @@ module.exports = async (gate, logger) => {
         const [email] = emails;
 
         if (!email)
-            throw new ReqError(422, 'No email in profile');
+            throw new UnprocessableEntity('No email in profile');
 
-        const existingPlayer = await tasu.request('identifyPlayer', {email});
+        logger.debug(`requesting ${w.player} identification`);
+        const existingPlayer = await tasu.request('identify', { email });
         let player;
+
         if (existingPlayer) {
             logger.debug('existing player, issuing token', existingPlayer);
             player = existingPlayer;
@@ -44,8 +48,8 @@ module.exports = async (gate, logger) => {
             player = {id, email, name};
             await stair.write('registerPlayer', player);
         }
-        const {frontend: {entrypoint}, jwt: {secret}} = config;
 
+        const { frontend: { entrypoint }, jwt: { secret }} = config;
         const jwt = await issueJWT({t: 'player', i: player.id}, secret);
         res.writeHead(302, {
             'Location': `${entrypoint}/login?token=${jwt}`

@@ -1,6 +1,6 @@
 const jwt = require('jsonwebtoken');
-const {promisify} = require('util');
-const ReqError = require('../../util/ReqError');
+const { BadRequest, Forbidden } = require('http-errors');
+const { promisify } = require('util');
 const payloadMap = require('@venture-api/fixtures/maps/jwt');
 const idMeta = require('@venture-api/fixtures/util/idMeta');
 const verify = promisify(jwt.verify);
@@ -23,13 +23,13 @@ module.exports = async function (req, access) {
     const { tasu, config } = gate.state;
 
     if (! req.headers.authorization)
-        throw new ReqError(400, 'No authorization header');
+        throw new BadRequest('No authorization header');
 
     const token = req.headers.authorization.split('Bearer ')[1];
     logger.debug('checking token presence');
 
     if (! token)
-        throw new ReqError(400, 'No authorization token');
+        throw new BadRequest('No authorization token');
 
     const { jwt: { secret }} = config;
     logger.debug('verifying token', token);
@@ -38,13 +38,13 @@ module.exports = async function (req, access) {
     try {
         tokenPayload = await verify(token, secret);
     } catch (error) {
-        throw new ReqError(400, 'Token verification failed');
+        throw new BadRequest('Token verification failed');
     }
     // extract principal ID
     const { [payloadMap.principalId]: principalId } = tokenPayload;
 
     if (! principalId)
-        throw new ReqError(400, 'No principal ID in token payload');
+        throw new BadRequest('No principal ID in token payload');
 
     // authorize
     const { type: principalType } = idMeta(principalId);
@@ -53,15 +53,15 @@ module.exports = async function (req, access) {
     if (`${principalType}Id` !== principalField) {
         // token principal type doesn't match endpoint principal type
         // example: we are authorizing player but pass a token for a facility
-        throw new ReqError(400, 'Principal type mismatch');
+        throw new BadRequest('Principal type mismatch');
     }
 
     logger.debug('authorizing', principalType, principalId, action, resource);
     const can = await tasu.request('checkACE', [ principalId, action, resource ]);
 
     if (! can)
-        throw new ReqError(403, 'Access denied');
+        throw new Forbidden('Access denied');
 
     // fetch & attach authorized principal
-    req[principalType] = await tasu.request('identify', [ principalField, principalId ]);
+    req[principalType] = await tasu.request('identify', { id: principalId });
 };

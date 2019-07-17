@@ -17,14 +17,14 @@ module.exports = async (gate, logger) => {
     }, async(req, res) => {
 
         const service = req.resourceId;
-        if (service === 'mock' && !['test', 'ci'].includes(environment))
+        if (service === 'mock' && ! ['test', 'ci'].includes(environment))
             throw new Error('Mock service is only allowed in test environment');
         logger.debug('authenticating via:', service);
         const authorizationUri = oauth[service].authorizationCode.authorizeURL({
             redirect_uri: `${entrypoint}/oauth/${service}/callback`
         });
         logger.debug('redirecting to', authorizationUri);
-        res.writeHead(302, {'Location': authorizationUri});
+        res.writeHead(302, { 'Location': authorizationUri });
         res.end();
     })
 };
