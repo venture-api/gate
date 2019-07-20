@@ -173,10 +173,8 @@ describe('endpoints', () => {
                 assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
-                assert.equal(error.response.body.message, `body should have required property 'code'`);
-                assert.equal(error.response.body.error, `Bad Request`);
+                assert.equal(error.response.body.message, `Missing 'type'`);
             }
-
         })
     });
 

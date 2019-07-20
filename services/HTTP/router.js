@@ -14,7 +14,7 @@ module.exports = function (method, url) {
     const [ gate, logger ] = this;
 
     // routing
-    const {pathname, query} = URL.parse(url, true);
+    const { pathname, query } = URL.parse(url, true);
     const trimmedPath = pathname.replace(/^\/+|\/+$/g, '');
     const [ major, resourceId, minor ] = trimmedPath.split('/');
     logger.debug('looking up route', { major, resourceId, minor });
@@ -31,5 +31,5 @@ module.exports = function (method, url) {
         throw new MethodNotAllowed('Not allowed: ' + method);
     }
 
-    return {major, resourceId, minor, query, ...routes[routePattern][method]};
+    return { major, resourceId, minor, query, ...routes[routePattern][method] };
 };

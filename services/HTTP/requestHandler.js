@@ -46,12 +46,16 @@ module.exports = async function (req, res) {
     // general request handling
     try {
         // extract endpoint config and parameters
-        const {resourceId, handler, access, query} = HTTP.router(method, url);
+        const { resourceId, handler, access, query, validator } = HTTP.router(method, url);
         req.resourceId = resourceId;
         req.query = query;
 
         // parse JSON body
         req.body = HTTP.parse(body, req.headers['content-type']);
+
+        // validate against the schema
+        if (validator)
+            HTTP.validate(req, validator);
 
         // run authorization if any
         if (access) {
