@@ -4,11 +4,13 @@ module.exports = async (gate, logger) => {
     const { tasu } = gate.state;
 
     HTTP.addRoute({
+
         method: 'GET',
         pathname: '/status'
-    }, async() => {
+
+    }, async () => {
         logger.debug('returning status');
         const mold = await tasu.request('mold.status', {});
-        return {mold};
+        return { mold };
     })
 };

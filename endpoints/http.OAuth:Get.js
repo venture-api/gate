@@ -5,16 +5,12 @@ module.exports = async (gate, logger) => {
     const { environment, http: {scheme, host, port }} = config;
     const entrypoint = `${scheme}://${host}:${port}`;
 
-    const schema = {
-        params: {
-            service: {type: 'string', enum: Object.keys(oauth)}
-        }
-    };
-
     HTTP.addRoute({
+
         method: 'GET',
         pathname: '/oauth/:id'
-    }, async(req, res) => {
+
+    }, async (req, res) => {
 
         const service = req.resourceId;
         if (service === 'mock' && ! ['test', 'ci'].includes(environment))

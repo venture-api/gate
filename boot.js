@@ -18,7 +18,7 @@ module.exports = async () => {
     gate.set('routes', {});
 
     // trid
-    gate.set('trid', new TRID({prefix: gate.id, length: 4}));
+    gate.set('trid', new TRID({ prefix: gate.id, length: 4 }));
 
     // Tasu
     const tasu = new Tasu(config.tasu);
@@ -32,7 +32,7 @@ module.exports = async () => {
 
     // Simple OAuth2
     const oauth = {};
-    Object.entries(config.oauth2).forEach(([service, config]) => {
+    Object.entries(config.oauth2).forEach(([ service, config ]) => {
         oauth[service] = simpleOAuth2.create(config);
     });
     gate.set('oauth', oauth);

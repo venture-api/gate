@@ -17,9 +17,9 @@ module.exports = function (method, url) {
     const { pathname, query } = URL.parse(url, true);
     const trimmedPath = pathname.replace(/^\/+|\/+$/g, '');
     const [ major, resourceId, minor ] = trimmedPath.split('/');
-    logger.debug('looking up route', { major, resourceId, minor });
     const routePattern = '/' + [major, resourceId ? ':id' : undefined, minor].filter(p => p).join('/');
     const { routes } = gate.state;
+    logger.debug('looking up route', { major, resourceId, minor }, 'in', Object.keys(routes).length, 'routes');
 
     // 404 pathname not found
     if (! routes[routePattern]) {

@@ -15,7 +15,8 @@ const AJV = require('ajv');
  */
 module.exports = function (config, handler) {
 
-    const [ gate ] = this;
+    const [ gate, logger ] = this;
+    logger.debug('registering route', config);
     const { method, pathname, access, schema } = config;
     let validator;
 

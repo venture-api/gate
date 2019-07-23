@@ -1,6 +1,7 @@
 const { Conflict } = require('http-errors');
 const { name, code, type } = require('@venture-api/fixtures/schemata/facility');
-const w = require('@venture-api/fixtures/dictionary');
+const w = require('@venture-api/fixtures/dictionary/words');
+const t = require('@venture-api/fixtures/dictionary/topics');
 
 
 module.exports = async (gate, logger) => {
@@ -20,9 +21,10 @@ module.exports = async (gate, logger) => {
                 required: [ 'name', 'type' ]
             }
         }
+
     }, async(req, res) => {
 
-        const { player, body: { code: customCode, type, name }} = req;
+        const { player, body: { code: customCode, type, resourceType, name }} = req;
         const { id: ownerId } = player;
         let generatedCode;
 
@@ -36,15 +38,15 @@ module.exports = async (gate, logger) => {
             }
         } else {
             logger.debug('generating code');
-            generatedCode = tasu.request(`${w.facility}.code.generate`, { type, name, ownerId });
+            generatedCode = tasu.request(t.generateFacilityCode, { type, name, ownerId });
         }
 
         logger.debug('generating unique id');
         const code = customCode || generatedCode;
-        const id = await tasu.request(`${w.facility}.id.generate`, { type });
+        const id = await tasu.request(t.generateFacilityId, { type, resourceType });
 
         logger.info(`dispatching ${w.facility} creation`, id);
-        const guid = await stair.write(`${w.facility}.create`, { id, name, ownerId, code });
+        const guid = await stair.write(t.facilityCreated, { id, name, ownerId, code });
         res.setHeader('x-guid', guid);
 
         logger.debug(`requesting token`);
