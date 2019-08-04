@@ -69,6 +69,15 @@ module.exports = (tasu) => {
             return rdrn.id
     });
 
+    tasu.listen(t.generateTransportOrderId, () => {
+            return 'TO-GTXGA787IFAAFKBDBJ';
+    });
+
+    tasu.listen(t.requestResourceData, ({ facilityId }) => {
+        if (facilityId === rdrn.id)
+            return ironOne
+    });
+
     tasu.listen(t.generateId, ({ type }) => {
 
         switch (type) {

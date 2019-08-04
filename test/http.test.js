@@ -177,27 +177,25 @@ describe('endpoints', () => {
 
     describe('Facility:Resource:Produce', () => {
 
-        it('creates a new resource', async () => {
-            await stair.read('createResource', ({ id, location, defects, ownerId }) => {
-                assert.equal(location, rdrn.id);
+        it('produces a new resource', async () => {
+            await stair.read(t.resourceProduced, ({ id, locationId, defects, ownerId }) => {
+                assert.equal(locationId, rdrn.id);
                 assert.deepEqual(defects, ironOne.defects);
                 assert.equal(ownerId, bonner.id);
                 ironOne.id = id;
                 assert.isOk(id);
             });
-            const res = await request.post(`${baseURL}/resources`, {
+            const res = await request.get(`${baseURL}/${w.resource}`, {
                 json: true,
-                headers: {
-                    'Authorization': `Bearer RDRNTOKEN`
-                },
+                headers: { 'Authorization': `Bearer RDRNTOKEN` },
                 resolveWithFullResponse: true
             });
             assert.equal(res.statusCode, 201);
-            const {id, location, defects, ownerId, producedAt} = res.body;
+            const { id, locationId, ownerId, originId, quality } = res.body;
             assert.equal(id, ironOne.id);
-            assert.equal(location, rdrn.id);
-            assert.equal(producedAt, rdrn.id);
-            assert.equal(defects.length, 1);
+            assert.equal(locationId, rdrn.id);
+            assert.equal(originId, rdrn.id);
+            assert.equal(quality, 80);
             assert.equal(ownerId, bonner.id);
             assert.isOk(res.headers['x-guid']);
         })
@@ -207,13 +205,18 @@ describe('endpoints', () => {
     describe('Transport Resource', () => {
 
         it('transports a resource from one location to another', async () => {
-            await stair.read('transportResource', ({id, location}) => {
-                assert.equal(location, gawa.id);
+            await stair.read(t.transportOrdered, ({ id, resourceId, destinationId }) => {
+                assert.isOk(id);
+                assert.equal(resourceId, ironOne.id);
+                assert.equal(destinationId, gawa.id);
             });
-            const res = await request.patch(`${baseURL}/resources/${ironOne.id}`, {
-                json: {location: gawa.id},
+            const res = await request.post(`${baseURL}/transport-orders`, {
+                json: {
+                    resourceId: ironOne.id,
+                    destinationId: gawa.id
+                },
                 headers: {
-                    'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0IjoiZmFjaWxpdHkiLCJpIjoiRkEtVURIUlNCT1dWRTMxTzEtVFIiLCJpYXQiOjE1MzA5MTM2OTJ9.4WIHZwunKM3ezVqVOAgRSCcps8nMoRZyj8lPGDqPUak`
+                    'Authorization': 'Bearer BONNERTOKEN'
                 },
                 resolveWithFullResponse: true
             });

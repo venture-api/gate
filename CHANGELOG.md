@@ -1,3 +1,8 @@
+[0.4.0]
+-------
+- [x] Drop Fastify in favor of custom http server
+
+
 [0.3.1] - 2018-06-21
 --------------------
 - [x] Increase code coverage

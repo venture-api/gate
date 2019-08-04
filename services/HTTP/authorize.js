@@ -56,5 +56,5 @@ module.exports = async function (req, access) {
         throw new Forbidden('Access denied');
 
     // fetch & attach authorized principal
-    req[type] = await tasu.request('identify', { id });
+    req.principalId = id;
 };

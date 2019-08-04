@@ -65,17 +65,16 @@ module.exports = async function (req, res) {
 
         // call endpoint handler
         const result = await handler(req, res);
+        let responseBody = '';
 
         // res.end() could be called earlier so there will be no result
-        if (result) {
-            const JSONstring = JSON.stringify(result);
+        if (typeof result === 'object')
+            responseBody = JSON.stringify(result);
 
-            // OK response
-            const length = Buffer.byteLength(JSONstring);
-            res.setHeader('Content-Length', length);
-            logger.debug(`-> [${reqID}] ${res.statusCode} / ${length} bytes / ${HRT2sec(process.hrtime(start))} sec`);
-            res.end(JSONstring);
-        }
+        const length = Buffer.byteLength(responseBody);
+        res.setHeader('Content-Length', length);
+        logger.debug(`-> [${reqID}] ${res.statusCode} / ${length} bytes / ${HRT2sec(process.hrtime(start))} sec`);
+        res.end(responseBody);
 
     } catch (error) {
 

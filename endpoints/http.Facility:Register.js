@@ -1,7 +1,8 @@
 const { Conflict } = require('http-errors');
-const { name, code, type } = require('@venture-api/fixtures/schemata/facility');
+const facilitySchema = require('@venture-api/fixtures/schemata/facility');
 const w = require('@venture-api/fixtures/dictionary/words');
 const t = require('@venture-api/fixtures/dictionary/topics');
+const k = require('@venture-api/fixtures/dictionary/keys');
 
 
 module.exports = async (gate, logger) => {
@@ -14,18 +15,11 @@ module.exports = async (gate, logger) => {
         method: 'POST',
         pathname: `/${w.facilities}`,
         access: [ 'playerId', 'create', w.facility ],
-        schema: {
-            body: {
-                type: 'object',
-                properties: { name, code, type },
-                required: [ 'name', 'type' ]
-            }
-        }
+        schema: { body: facilitySchema }
 
     }, async(req, res) => {
 
-        const { player, body: { code: customCode, type, resourceType, name }} = req;
-        const { id: ownerId } = player;
+        const { principalId: ownerId, body: { code: customCode, type, resourceType, name }} = req;
         let generatedCode;
 
         if (customCode) {

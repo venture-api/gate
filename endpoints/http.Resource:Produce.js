@@ -11,14 +11,15 @@ module.exports = async (gate, logger)  => {
     HTTP.addRoute({
 
         method: 'GET',
-        pathname: `/${w.resources}`,
-        access: [ k.facilityId, w.produce ],
+        pathname: `/${w.resource}`,
+        access: [ k.facilityId, w.produce ]
+
     }, async (req, res) => {
 
-        const { facility } = req;
+        const { principalId } = req;
 
         logger.debug(`requesting resource data`);
-        const resourceData = await tasu.request(`${w.facility}.${w.resource}.prepare`, { facility });
+        const resourceData = await tasu.request(t.requestResourceData, { facilityId: principalId });
 
         logger.info(`dispatching resource produced event`);
         const guid = await stair.write(t.resourceProduced, resourceData);
