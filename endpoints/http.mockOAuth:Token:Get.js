@@ -1,13 +1,18 @@
-const {bonner} = require('@venture-api/fixtures/fixtures/player');
+const { bonner } = require('@venture-api/fixtures/fixtures/player');
 
 
 module.exports = async (gate, logger) => {
 
-    const {fastify} = gate.get();
+    const { HTTP } = gate.services;
 
-    fastify.post('/mock/oauth/token', async (req) => {
+    HTTP.addRoute({
 
-        const {code} = req.body;
+        method: 'POST',
+        pathname: '/mock-oauth-token'
+
+    }, async (req) => {
+
+        const { code } = req.body;
 
         logger.debug('issuing token for', code);
         return {
@@ -16,7 +21,7 @@ module.exports = async (gate, logger) => {
             "expires_in":3600,
             "refresh_token":"IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk",
             "scope":"create",
-            "info": {displayName: bonner.name, username: 'bonner', emails: [bonner.email]}
+            "info": { displayName: bonner.name, username: 'bonner', emails: [ bonner.email ]}
         };
     });
 

@@ -3,6 +3,7 @@ const Kojo = require('kojo');
 const configLoader = require('yt-config');
 const Tasu = require('tasu');
 const Stair = require('stair');
+const TRID = require('trid');
 
 
 module.exports = async () => {
@@ -16,6 +17,8 @@ module.exports = async () => {
     // HTTP Router
     gate.set('routes', {});
 
+    // trid
+    gate.set('trid', new TRID({ prefix: gate.id, length: 4 }));
 
     // Tasu
     const tasu = new Tasu(config.tasu);
@@ -29,16 +32,15 @@ module.exports = async () => {
 
     // Simple OAuth2
     const oauth = {};
-    Object.entries(config.oauth2).forEach(([service, config]) => {
+    Object.entries(config.oauth2).forEach(([ service, config ]) => {
         oauth[service] = simpleOAuth2.create(config);
     });
     gate.set('oauth', oauth);
 
     await gate.ready();
 
-    const {http} = gate.modules;
-    const server = await http.listen();
-    gate.set('httpServer', server);
+    const { HTTP } = gate.services;
+    gate.set('httpServer', await HTTP.listen());
 
     return gate;
 };
