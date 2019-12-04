@@ -1,7 +1,6 @@
 const { assert } = require('chai');
 const nock = require('nock');
 const request = require('request-promise-native');
-const qs = require('querystring');
 const TasuMock = require('./tasuMock');
 const boot = require('../boot');
 const { bonner } = require('@venture-api/fixtures/fixtures/player');
@@ -80,7 +79,7 @@ describe('endpoints', () => {
                 assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
-                assert.equal(error.response.body.message, 'No authorization header');
+                assert.equal(error.response.body, 'No authorization header');
             }
         });
 
@@ -96,7 +95,7 @@ describe('endpoints', () => {
                 assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
-                assert.equal(error.response.body.message, 'No authorization token');
+                assert.equal(error.response.body, 'No authorization token');
             }
         });
 
@@ -112,7 +111,7 @@ describe('endpoints', () => {
                 assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
-                assert.equal(error.response.body.message, 'Token verification failed');
+                assert.equal(error.response.body, 'Token verification failed');
             }
         });
 
@@ -128,7 +127,7 @@ describe('endpoints', () => {
                 assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
-                assert.equal(error.response.body.message, 'No principal ID in token payload');
+                assert.equal(error.response.body, 'No principal ID in token payload');
             }
         });
 
@@ -161,7 +160,7 @@ describe('endpoints', () => {
         it('responds with validation error', async () => {
             try {
                 const res = await request.post(`${baseURL}/${w.facilities}`, {
-                    json: {name: 'Bad Factory'},
+                    json: { name: 'Bad Factory' },
                     headers: {
                         'Authorization': `Bearer BONNERTOKEN`
                     },
@@ -170,7 +169,7 @@ describe('endpoints', () => {
                 assert.isUndefined(res);
             } catch (error) {
                 assert.equal(error.statusCode, 400);
-                assert.equal(error.response.body.message, `Missing 'type'`);
+                assert.equal(error.response.body, `Missing 'type'`);
             }
         })
     });

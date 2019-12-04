@@ -13,10 +13,13 @@
   "repository": {
     "git": "git@github.com:venture-api/gate.git"
   },
+  "engines": {
+    "node": "10.17.0"
+  },
   "author": "Maksim Korinets",
   "license": "UNLICENSED",
   "dependencies": {
-    "@venture-api/fixtures": "^5.0.0",
+    "@venture-api/fixtures": "^5.1.0",
     "ajv": "^6.10.2",
     "chai": "^4.2.0",
     "http-errors": "^1.7.3",
