@@ -19,7 +19,7 @@
     "@venture-api/fixtures": "^0.2.4",
     "body-parser": "^1.18.3",
     "chai": "^4.1.2",
-    "fastify": "^1.6.0",
+    "fastify": "^2.15.1",
     "fastify-formbody": "^2.0.0",
     "http-errors": "^1.6.3",
     "jsonwebtoken": "^8.3.0",
