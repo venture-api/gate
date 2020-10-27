@@ -2,7 +2,7 @@ const AJV = require('ajv');
 
 
 /**
- * Registers endpoint handler. It also compiles AJV's validation function as
+ * Register endpoint handler. It also compiles AJV's validation function as
  * 'validator'.
  *
  * @param {object} config - endpoint config object

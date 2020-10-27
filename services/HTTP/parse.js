@@ -4,7 +4,7 @@ const { BadRequest } = require('http-errors');
 
 module.exports = function (body, contentType) {
 
-    const [ gate, logger ] = this;
+    const [ , logger ] = this;
 
     if (! body) return;
 

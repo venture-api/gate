@@ -45,9 +45,7 @@ module.exports = async (gate, logger) => {
         const { frontend: { entrypoint }, jwt: { secret }} = config;
         const jwt = await tasu.request(t.signToken, { id: player.id }, secret);
 
-        res.writeHead(302, {
-            'Location': `${entrypoint}/login?token=${jwt}`
-        });
-        res.end();
+        res.setHeader('Location', `${entrypoint}/login?token=${jwt}`);
+        res.statusCode = 302;
     });
 };

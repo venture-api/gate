@@ -35,13 +35,15 @@ module.exports = async function (req, res) {
     req.on('data', (data) => {
         buffer += decoder.write(data);
     });
-    const bodyReady = new Promise(resolve => {
+    const requestBody = await new Promise(resolve => {
         req.on('end', () => {
             buffer += decoder.end();
             resolve(buffer);
         });
-    });
-    const body = await bodyReady; // TODO add content length limit!
+    }); // TODO add content length limit!
+
+    let responseBody = '';
+    let symbol = '->';
 
     // general request handling
     try {
@@ -51,7 +53,7 @@ module.exports = async function (req, res) {
         req.query = query;
 
         // parse JSON body
-        req.body = HTTP.parse(body, req.headers['content-type']);
+        req.body = HTTP.parse(requestBody, req.headers['content-type']);
 
         // validate against the schema
         if (validator)
@@ -65,29 +67,30 @@ module.exports = async function (req, res) {
 
         // call endpoint handler
         const result = await handler(req, res);
-        let responseBody = '';
 
-        // res.end() could be called earlier so there will be no result
         if (typeof result === 'object')
             responseBody = JSON.stringify(result);
 
-        const length = Buffer.byteLength(responseBody);
-        res.setHeader('Content-Length', length);
-        logger.debug(`-> [${reqID}] ${res.statusCode} / ${length} bytes / ${HRT2sec(process.hrtime(start))} sec`);
-        res.end(responseBody);
+    } catch (error) { // error response
 
-    } catch (error) {
-
-        // error response
-        logger.error(`!! [${reqID}] ${error.statusCode ? error.statusCode : ''}`, error.message);
+        symbol = '!!';
+        res.setHeader('Content-Type', 'text/plain');
 
         if (error instanceof HttpError) {
-            res.writeHead(error.statusCode);
-            res.end(JSON.stringify({ message: error.message }));
+            res.statusCode = error.statusCode;
+            responseBody = error.message;
         } else {
+            res.statusCode = 500;
             logger.error(error.stack);
-            res.writeHead(500);
-            res.end('Unexpected error');
+            responseBody = 'Unexpected error';
         }
+
+    } finally { // finalize any response
+
+        const length = Buffer.byteLength(responseBody);
+        res.setHeader('Content-Length', length);
+
+        logger.debug(`${symbol} [${reqID}] ${res.statusCode} / ${length} bytes / ${HRT2sec(process.hrtime(start))} sec \n${JSON.stringify(res.getHeaders(), null, 2)} \n-----------------------------\n${responseBody}\n-----------------------------`);
+        res.end(responseBody);
     }
 };

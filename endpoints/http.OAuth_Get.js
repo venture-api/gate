@@ -20,7 +20,7 @@ module.exports = async (gate, logger) => {
             redirect_uri: `${entrypoint}/oauth/${service}/callback`
         });
         logger.debug('redirecting to', authorizationUri);
-        res.writeHead(302, { 'Location': authorizationUri });
-        res.end();
+        res.setHeader('Location', authorizationUri);
+        res.statusCode = 302;
     })
 };

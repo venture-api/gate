@@ -17,7 +17,7 @@ module.exports = async (gate, logger) => {
         access: [ 'playerId', 'create', w.facility ],
         schema: { body: facilitySchema }
 
-    }, async(req, res) => {
+    }, async (req, res) => {
 
         const { principalId: ownerId, body: { code: customCode, type, resourceType, name }} = req;
         let generatedCode;

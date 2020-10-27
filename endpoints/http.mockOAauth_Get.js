@@ -24,8 +24,8 @@ module.exports = async (gate, logger) => {
             throw new BadRequest('Bad client ID');
 
         logger.debug('redirecting to', redirect_uri);
-        res.writeHead(302, {'Location': `${redirect_uri}?code=AUTHORZTN_CODE&scope=${scope}`});
-        res.end();
+        res.statusCode = 302;
+        res.setHeader('Location', `${redirect_uri}?code=AUTHORZTN_CODE&scope=${scope}`);
     });
 
 };
