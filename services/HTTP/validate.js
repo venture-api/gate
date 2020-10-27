@@ -12,7 +12,7 @@ const { BadRequest } = require('http-errors');
  */
 module.exports = function(req, validator) {
 
-    const [ gate, logger ] = this;
+    const [ , logger ] = this;
 
     // validate incoming data combined
     const payload = {};
