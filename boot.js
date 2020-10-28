@@ -1,12 +1,12 @@
-const simpleOAuth2 = require('simple-oauth2');
-const Kojo = require('kojo');
-const configLoader = require('yt-config');
-const Tasu = require('tasu');
-const Stair = require('stair');
-const TRID = require('trid');
+import simpleOAuth2 from 'simple-oauth2';
+import Kojo from 'kojo';
+import configLoader from 'yt-config';
+import Tasu from 'tasu';
+import Stair from 'stair';
+import TRID from 'trid';
 
 
-module.exports = async () => {
+export default async function () {
 
     const config = await configLoader('config.ini');
 

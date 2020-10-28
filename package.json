@@ -16,6 +16,7 @@
   "engines": {
     "node": "10.17.0"
   },
+  "type": "module",
   "author": "Maksim Korinets",
   "license": "UNLICENSED",
   "dependencies": {

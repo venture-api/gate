@@ -1,13 +1,13 @@
-const { assert } = require('chai');
-const nock = require('nock');
-const request = require('request-promise-native');
-const TasuMock = require('./tasuMock');
-const boot = require('../boot');
-const { bonner } = require('@venture-api/fixtures/fixtures/player');
-const w = require('@venture-api/fixtures/dictionary/words');
-const t = require('@venture-api/fixtures/dictionary/topics');
-const { rdrn, gawa } = require('@venture-api/fixtures/fixtures/facility');
-const { ironOne } = require('@venture-api/fixtures/fixtures/resource');
+import chai from 'chai'; const { assert } = chai;
+import nock from 'nock';
+import request from 'request-promise-native';
+import TasuMock from './tasuMock.js';
+import boot from '../boot.js';
+import w  from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
+import pl from '@venture-api/fixtures/fixtures/players.js';
+import fc from '@venture-api/fixtures/fixtures/facilities.js';
+import rs from '@venture-api/fixtures/fixtures/resources.js';
 
 
 let tasu;
