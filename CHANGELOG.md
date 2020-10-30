@@ -1,6 +1,7 @@
 [0.5.0]
 -------
-- [ ] Move to ESM (#6)
+- [x] Move to ESM (#6)
+- [ ] Move to Github Actions for CI
 
 
 [0.4.0] - 2019-08-04

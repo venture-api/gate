@@ -4,7 +4,8 @@
  * @param {Array} HRTime - high resolution time array
  * @returns {Number} - time in seconds
  */
-module.exports = function HRT2sec(HRTime) {
-    const [sec, nano] = HRTime;
+export default function HRT2sec(HRTime) {
+
+    const [ sec, nano ] = HRTime;
     return (sec + nano * 1e-9).toFixed(5);
 };

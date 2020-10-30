@@ -1,7 +1,7 @@
-const { bonner } = require('@venture-api/fixtures/fixtures/player');
+import pl from '@venture-api/fixtures/fixtures/players.js';
 
 
-module.exports = async (gate, logger) => {
+export default async (gate, logger) => {
 
     const { HTTP } = gate.services;
 
@@ -21,8 +21,7 @@ module.exports = async (gate, logger) => {
             "expires_in":3600,
             "refresh_token":"IwOGYzYTlmM2YxOTQ5MGE3YmNmMDFkNTVk",
             "scope":"create",
-            "info": { displayName: bonner.name, username: 'bonner', emails: [ bonner.email ]}
+            "info": { displayName: pl.bonner.name, username: 'bonner', emails: [ pl.bonner.email ]}
         };
     });
-
 };

@@ -1,4 +1,4 @@
-module.exports = async (gate, logger) => {
+export default async (gate, logger) => {
 
     const { HTTP } = gate.services;
     const { tasu } = gate.state;

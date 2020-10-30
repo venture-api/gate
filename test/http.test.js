@@ -56,10 +56,10 @@ describe('endpoints', () => {
                 .query(true)
                 .reply(200);
             await stair.read('player.register', ({id, name, email}) => {
-                assert.equal(email, bonner.email);
+                assert.equal(email, pl.bonner.email);
                 assert.isOk(id);
-                bonner.id = id;
-                assert.equal(name, bonner.name);
+                pl.bonner.id = id;
+                assert.equal(name, pl.bonner.name);
             });
             const res = await request.get(`${baseURL}/oauth/mock`, {
                 resolveWithFullResponse: true
@@ -73,7 +73,7 @@ describe('endpoints', () => {
         it('throws if there is no authorization header', async () => {
             try {
                 const res = await request.post(`${baseURL}/facilities`, {
-                    json: rdrn,
+                    json: fc.rdrn,
                     resolveWithFullResponse: true
                 });
                 assert.isUndefined(res);
@@ -86,7 +86,7 @@ describe('endpoints', () => {
         it('throws if there is no token', async () => {
             try {
                 const res = await request.post(`${baseURL}/facilities`, {
-                    json: rdrn,
+                    json: fc.rdrn,
                     headers: {
                         'Authorization': 'Basic YWxhZGRpbjpvcGVuc2VzYW1l'
                     },
@@ -102,7 +102,7 @@ describe('endpoints', () => {
         it('throws if token verification failed', async () => {
             try {
                 const res = await request.post(`${baseURL}/facilities`, {
-                    json: rdrn,
+                    json: fc.rdrn,
                     headers: {
                         'Authorization': 'Bearer BADTOKEN'
                     },
@@ -118,7 +118,7 @@ describe('endpoints', () => {
         it('throws if token has no principal id', async () => {
             try {
                 const res = await request.post(`${baseURL}/facilities`, {
-                    json: rdrn,
+                    json: fc.rdrn,
                     headers: {
                         'Authorization': 'Bearer NOPRINCIPALTOKEN'
                     },
@@ -133,25 +133,25 @@ describe('endpoints', () => {
 
         it('creates a new factory', async () => {
             await stair.read(t.facilityCreated, ({ id, name, code, ownerId }) => {
-                assert.equal(id, rdrn.id);
-                assert.equal(name, rdrn.name);
-                assert.equal(code, rdrn.code);
-                assert.equal(ownerId, bonner.id);
+                assert.equal(id, fc.rdrn.id);
+                assert.equal(name, fc.rdrn.name);
+                assert.equal(code, fc.rdrn.code);
+                assert.equal(ownerId, pl.bonner.id);
             });
 
             const res = await request.post(`${baseURL}/facilities`, {
-                json: rdrn,
+                json: fc.rdrn,
                 headers: { 'Authorization': `Bearer BONNERTOKEN` },
                 resolveWithFullResponse: true
             });
 
             const { name, code, type, ownerId, id } = res.body;
             assert.equal(res.statusCode, 201);
-            assert.equal(name, rdrn.name);
-            assert.equal(code, rdrn.code);
-            assert.equal(type, rdrn.type);
-            assert.equal(ownerId, bonner.id);
-            assert.equal(id, rdrn.id);
+            assert.equal(name, fc.rdrn.name);
+            assert.equal(code, fc.rdrn.code);
+            assert.equal(type, fc.rdrn.type);
+            assert.equal(ownerId, pl.bonner.id);
+            assert.equal(id, fc.rdrn.id);
             assert.isOk(res.headers['x-guid']);
             factoryJWT = res.headers['x-token'];
             assert.isOk(factoryJWT);
@@ -178,10 +178,10 @@ describe('endpoints', () => {
 
         it('produces a new resource', async () => {
             await stair.read(t.resourceProduced, ({ id, locationId, defects, ownerId }) => {
-                assert.equal(locationId, rdrn.id);
-                assert.deepEqual(defects, ironOne.defects);
-                assert.equal(ownerId, bonner.id);
-                ironOne.id = id;
+                assert.equal(locationId, fc.rdrn.id);
+                assert.deepEqual(defects, rs.ironOne.defects);
+                assert.equal(ownerId, pl.bonner.id);
+                rs.ironOne.id = id;
                 assert.isOk(id);
             });
             const res = await request.get(`${baseURL}/${w.resource}`, {
@@ -191,11 +191,11 @@ describe('endpoints', () => {
             });
             assert.equal(res.statusCode, 201);
             const { id, locationId, ownerId, originId, quality } = res.body;
-            assert.equal(id, ironOne.id);
-            assert.equal(locationId, rdrn.id);
-            assert.equal(originId, rdrn.id);
+            assert.equal(id, rs.ironOne.id);
+            assert.equal(locationId, fc.rdrn.id);
+            assert.equal(originId, fc.rdrn.id);
             assert.equal(quality, 80);
-            assert.equal(ownerId, bonner.id);
+            assert.equal(ownerId, pl.bonner.id);
             assert.isOk(res.headers['x-guid']);
         })
 
@@ -206,13 +206,13 @@ describe('endpoints', () => {
         it('transports a resource from one location to another', async () => {
             await stair.read(t.transportOrdered, ({ id, resourceId, destinationId }) => {
                 assert.isOk(id);
-                assert.equal(resourceId, ironOne.id);
-                assert.equal(destinationId, gawa.id);
+                assert.equal(resourceId, rs.ironOne.id);
+                assert.equal(destinationId, fc.gawa.id);
             });
             const res = await request.post(`${baseURL}/transport-orders`, {
                 json: {
-                    resourceId: ironOne.id,
-                    destinationId: gawa.id
+                    resourceId: rs.ironOne.id,
+                    destinationId: fc.gawa.id
                 },
                 headers: {
                     'Authorization': 'Bearer BONNERTOKEN'

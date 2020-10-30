@@ -1,11 +1,11 @@
-const { Conflict } = require('http-errors');
-const facilitySchema = require('@venture-api/fixtures/schemata/facility');
-const w = require('@venture-api/fixtures/dictionary/words');
-const t = require('@venture-api/fixtures/dictionary/topics');
-const k = require('@venture-api/fixtures/dictionary/keys');
+import httpErrors from 'http-errors';
+const { Conflict } = httpErrors;
+import facilitySchema from '@venture-api/fixtures/validation/facility.js';
+import w  from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
 
 
-module.exports = async (gate, logger) => {
+export default async (gate, logger) => {
 
     const { tasu, stair } = gate.state;
     const { HTTP } = gate.services;

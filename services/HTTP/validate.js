@@ -1,4 +1,4 @@
-const { BadRequest } = require('http-errors');
+import httpErrors from 'http-errors';
 
 
 /**
@@ -8,9 +8,9 @@ const { BadRequest } = require('http-errors');
  * @param {Object} req - IncomingMessage
  * @param {function} validator - AJV's compiled schema validator
  * @return {undefined}
- * @throws {BadRequest}
+ * @throws {httpErrors.BadRequest}
  */
-module.exports = function(req, validator) {
+export default function(req, validator) {
 
     const [ , logger ] = this;
 
@@ -48,10 +48,10 @@ module.exports = function(req, validator) {
             logger.debug("couldn't format AJV error", keyword, error.dataPath);
             const prefix = error.dataPath ? `'${error.dataPath.replace('.', '')}'` : 'Request payload';
             const suffix = error.params.additionalProperty ? `: '${error.params.additionalProperty}'` : '';
-            message =  `${prefix} ${error.message}${suffix}`;
+            message = `${prefix} ${error.message}${suffix}`;
         }
 
-        throw new BadRequest(message);
+        throw new httpErrors.BadRequest(message); // TODO consider stop *throwing* http errors. These are not actual errors!
     }
 
 };

@@ -1,7 +1,8 @@
-const { BadRequest } = require('http-errors');
+import httpErrors from 'http-errors';
+const { BadRequest } = httpErrors;
 
 
-module.exports = async (gate, logger) => {
+export default async (gate, logger) => {
 
     const { config } = gate.state;
     const { HTTP } = gate.services;

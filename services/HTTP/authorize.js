@@ -1,5 +1,6 @@
-const { BadRequest, Forbidden } = require('http-errors');
-const t = require('@venture-api/fixtures/dictionary/topics');
+import httpErrors from 'http-errors';
+const { BadRequest, Forbidden } = httpErrors;
+import t from '@venture-api/fixtures/dictionary/topics.js';
 
 
 /**
@@ -14,7 +15,7 @@ const t = require('@venture-api/fixtures/dictionary/topics');
  * @param {Array} access - access 'tuple': [principal, action, resource]
  * @return {String} - principal ID value (later objects probably)
  */
-module.exports = async function (req, access) {
+export default async function (req, access) {
 
     const [ gate, logger ] = this;
     const { tasu } = gate.state;

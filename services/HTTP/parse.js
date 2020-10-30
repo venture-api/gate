@@ -1,8 +1,10 @@
-const querystring = require('querystring');
-const { BadRequest } = require('http-errors');
+import querystring from 'querystring';
+import errors from 'http-errors';
 
 
-module.exports = function (body, contentType) {
+const { BadRequest } = errors;
+
+export default function (body, contentType) {
 
     const [ , logger ] = this;
 

@@ -1,10 +1,10 @@
-const { properties: { id: facilityId } } = require('@venture-api/fixtures/schemata/facility');
-const { id: resourceId } = require('@venture-api/fixtures/schemata/resource');
-const w = require('@venture-api/fixtures/dictionary/words');
-const t = require('@venture-api/fixtures/dictionary/topics');
+import facProps from '@venture-api/fixtures/validation/facility.js';
+import resProps from '@venture-api/fixtures/validation/resource.js';
+import w from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
 
 
-module.exports = async (gate, logger) => {
+export default async (gate, logger) => {
 
     const { stair, tasu } = gate.state;
     const { HTTP } = gate.services;
@@ -17,7 +17,7 @@ module.exports = async (gate, logger) => {
         schema: {
             body: {
                 type: 'object',
-                properties: { resourceId, destinationId: facilityId }},
+                properties: { resourceId: resProps.id, destinationId: facProps.properties.id }},
         }
 
     }, async (req, res) => {
