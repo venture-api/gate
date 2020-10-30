@@ -20,7 +20,7 @@
   "author": "Maksim Korinets",
   "license": "UNLICENSED",
   "dependencies": {
-    "@venture-api/fixtures": "^5.1.0",
+    "@venture-api/fixtures": "^6.0.1",
     "ajv": "^6.10.2",
     "chai": "^4.2.0",
     "http-errors": "^1.8.0",
