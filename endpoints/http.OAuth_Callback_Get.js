@@ -1,9 +1,10 @@
-const { UnprocessableEntity } = require('http-errors');
-const w = require('@venture-api/fixtures/dictionary/words');
-const t = require('@venture-api/fixtures/dictionary/topics');
+import httpErrors from 'http-errors';
+const { UnprocessableEntity } = httpErrors;
+import w  from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
 
 
-module.exports = async (gate, logger) => {
+export default async (gate, logger) => {
 
     const { config, oauth, stair, tasu } = gate.state;
     const { HTTP } = gate.services;
@@ -20,8 +21,8 @@ module.exports = async (gate, logger) => {
 
         logger.debug(`processing '${service}' callback`);
         const result = await oauth[service].authorizationCode.getToken({ code });
-        const {token} = oauth[service].accessToken.create(result);
-        const {displayName, username, emails} = token.info;
+        const { token } = oauth[service].accessToken.create(result);
+        const { displayName, username, emails } = token.info;
         const name = displayName || username;
         const [ email ] = emails;
 

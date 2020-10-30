@@ -16,15 +16,16 @@
   "engines": {
     "node": "10.17.0"
   },
+  "type": "module",
   "author": "Maksim Korinets",
   "license": "UNLICENSED",
   "dependencies": {
     "@venture-api/fixtures": "^5.1.0",
     "ajv": "^6.10.2",
     "chai": "^4.2.0",
-    "http-errors": "^1.7.3",
+    "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
-    "kojo": "^7.0.0",
+    "kojo": "^8.0.2",
     "mocha": "^8.2.0",
     "nock": "^9.6.1",
     "nyc": "^14.1.1",

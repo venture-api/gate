@@ -1,4 +1,4 @@
-const AJV = require('ajv');
+import AJV from 'ajv';
 
 
 /**
@@ -13,7 +13,7 @@ const AJV = require('ajv');
  * @param {function} handler - the handler function
  * @return {undefined}
  */
-module.exports = function (config, handler) {
+export default function (config, handler) {
 
     const [ gate, logger ] = this;
     logger.debug('registering route', config);

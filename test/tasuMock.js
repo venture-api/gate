@@ -1,13 +1,13 @@
-const assert = require('assert');
-const { bonner } = require('@venture-api/fixtures/fixtures/player');
-const { rdrn, boex } = require('@venture-api/fixtures/fixtures/facility');
-const { ironOne } = require('@venture-api/fixtures/fixtures/resource');
-const regions = require('@venture-api/fixtures/fixtures/region');
-const t = require('@venture-api/fixtures/dictionary/topics');
-const w = require('@venture-api/fixtures/dictionary/words');
+import assert from 'assert';
+import pl from '@venture-api/fixtures/fixtures/players.js';
+import fc from '@venture-api/fixtures/fixtures/facilities.js';
+import rs from '@venture-api/fixtures/fixtures/resources.js';
+import rg from '@venture-api/fixtures/fixtures/regions.js';
+import w  from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
 
 
-module.exports = (tasu) => {
+export default function (tasu) {
 
     tasu.listen('mold.status', () => {
         return { status: 'ok', id: 'MOLD-001' }
@@ -26,9 +26,9 @@ module.exports = (tasu) => {
             case 'NOPRINCIPALTOKEN':
                 return {};
             case 'BONNERTOKEN':
-                return { id: bonner.id, type: w.player };
+                return { id: pl.bonner.id, type: w.player };
             case 'RDRNTOKEN':
-                return { id: rdrn.id, type: w.facility }
+                return { id: fc.rdrn.id, type: w.facility }
         }
     });
 
@@ -39,15 +39,15 @@ module.exports = (tasu) => {
         }
 
         switch (id) {
-            case bonner.id:
-                return bonner;
-            case rdrn.id:
-                return rdrn;
-            case boex.id:
-                return boex;
+            case pl.bonner.id:
+                return pl.bonner;
+            case fc.rdrn.id:
+                return fc.rdrn;
+            case fc.boex.id:
+                return fc.boex;
         }
 
-        if (code === rdrn.code)
+        if (code === fc.rdrn.code)
             return null;
 
         return null;
@@ -56,7 +56,7 @@ module.exports = (tasu) => {
 
     tasu.listen(t.getRegion, ({name}) => {
         assert(name);
-        return regions[name];
+        return rg[name];
     });
 
     tasu.listen(t.checkACE, (accessRecord) => {
@@ -66,7 +66,7 @@ module.exports = (tasu) => {
 
     tasu.listen(t.generateFacilityId, ({ type }) => {
         if (type === w.mine)
-            return rdrn.id
+            return fc.rdrn.id
     });
 
     tasu.listen(t.generateTransportOrderId, () => {
@@ -74,20 +74,19 @@ module.exports = (tasu) => {
     });
 
     tasu.listen(t.requestResourceData, ({ facilityId }) => {
-        if (facilityId === rdrn.id)
-            return ironOne
+        if (facilityId === fc.rdrn.id)
+            return rs.ironOne
     });
 
     tasu.listen(t.generateId, ({ type }) => {
 
         switch (type) {
             case w.player:
-                return bonner.id;
+                return pl.bonner.id;
             case w.facility:
-                return rdrn.id;
+                return fc.rdrn.id;
             case w.resource:
-                return ironOne.id;
+                return rs.ironOne.id;
         }
-
     });
 };

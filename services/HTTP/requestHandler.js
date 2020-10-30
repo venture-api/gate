@@ -1,6 +1,6 @@
-const { StringDecoder } = require('string_decoder');
-const { HttpError } = require('http-errors');
-const HRT2sec = require('../../util/HRT2sec');
+import { StringDecoder } from 'string_decoder';
+import { HttpError } from 'http-errors';
+import HRT2sec from '../../util/HRT2sec.js';
 
 
 /**
@@ -11,7 +11,7 @@ const HRT2sec = require('../../util/HRT2sec');
  * @param {Object} res - ServerResponse (https://nodejs.org/api/http.html#http_class_http_serverresponse)
  * @return {Promise}
  */
-module.exports = async function (req, res) {
+export default async function (req, res) {
 
     const [ gate, logger ] = this;
     const { trid } = gate.state;

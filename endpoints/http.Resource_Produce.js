@@ -1,9 +1,9 @@
-const w = require('@venture-api/fixtures/dictionary/words');
-const k = require('@venture-api/fixtures/dictionary/keys');
-const t = require('@venture-api/fixtures/dictionary/topics');
+import w  from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
+import k from '@venture-api/fixtures/dictionary/keys.js';
 
 
-module.exports = async (gate, logger)  => {
+export default async (gate, logger)  => {
 
     const { tasu, stair } = gate.state;
     const { HTTP } = gate.services;

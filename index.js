@@ -1,4 +1,4 @@
-const boot = require('./boot');
+import boot from './boot';
 
 
 boot().catch(error => { throw error });

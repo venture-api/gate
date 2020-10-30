@@ -1,4 +1,4 @@
-const http = require('http');
+import http from 'http';
 
 
 /**
@@ -6,7 +6,7 @@ const http = require('http');
  *
  * @return {Promise.<Object>} - node's httpServer
  */
-module.exports = async function () {
+export default async function () {
 
     const [ gate, logger ] = this;
     const { trid, config: { http: { port }}} = gate.state;

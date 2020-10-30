@@ -1,5 +1,11 @@
-[0.4.0]
+[0.5.0]
 -------
+- [x] Move to ESM (#6)
+- [ ] Move to Github Actions for CI
+
+
+[0.4.0] - 2019-08-04
+--------------------
 - [x] Drop Fastify in favor of custom http server
 
 

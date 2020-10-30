@@ -1,5 +1,8 @@
-const URL = require('url');
-const { MethodNotAllowed, NotFound } = require('http-errors');
+import URL from 'url';
+import errors from 'http-errors';
+
+
+const { MethodNotAllowed, NotFound } = errors;
 
 /**
  * The router. Parses method and URL and performs a lookup for
@@ -9,7 +12,7 @@ const { MethodNotAllowed, NotFound } = require('http-errors');
  * @param {String} url - request's URL
  * @return {{major:String, resourceId:String, minor:String, query:Object,...}}
  */
-module.exports = function (method, url) {
+export default function (method, url) {
 
     const [ gate, logger ] = this;
 
