@@ -1,7 +1,17 @@
+![Gate logo](https://assets.gitlab-static.net/uploads/-/system/project/avatar/6838930/icons8-router-96.png?width=88)
+
 Gate
 ====
 
-Venture API HTTP gateway service.
+![Tests status](https://github.com/venture-api/gate/workflows/Tests/badge.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/venture-api/gate/badge.svg?branch=master)](https://coveralls.io/github/venture-api/gate?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/github/venture-api/gate/badge.svg?targetFile=package.json&branch=master)](https://snyk.io/test/github/venture-api/gate?targetFile=package.json)
+
+![Tests status](https://github.com/venture-api/gate/workflows/Tests/badge.svg?branch=develop)
+[![Coverage Status](https://coveralls.io/repos/github/venture-api/gate/badge.svg?branch=develop)](https://coveralls.io/github/venture-api/gate?branch=master)
+[![Known Vulnerabilities](https://snyk.io/test/github/venture-api/gate/develop/badge.svg?targetFile=package.json)](https://snyk.io/test/github/venture-api/gate?targetFile=package.json)
+
+Venture API Gateway service.
 
 
 Install
