@@ -34,6 +34,15 @@ jobs:
           mv nats-server-$NATS_VERSION-linux-amd64 nats-server
           ./nats-server/nats-server &
 
+      - name: Launch nats-streaming-server
+        env:
+          NATS_VERSION: v0.14.2
+        run: |
+          wget "https://github.com/nats-io/nats-streaming-server/releases/download/$NATS_VERSION/nats-streaming-server-$NATS_VERSION-linux-amd64.zip" -O tmp.zip
+          unzip tmp.zip
+          mv nats-streaming-server-$NATS_VERSION-linux-amd64 nats-streaming-server
+          ./nats-streaming-server/nats-streaming-server -p 4223 &
+
       - name: Run tests with coverage
         run: ./node_modules/.bin/c8 npm test && ./node_modules/.bin/c8 report --reporter=text-lcov | ./node_modules/.bin/coveralls
         env:
