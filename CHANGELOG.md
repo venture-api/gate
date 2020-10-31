@@ -1,3 +1,14 @@
+[0.5.0] - 2020-10-31
+--------------------
+- [x] Move to ESM (#6)
+- [x] Move to Github Actions for CI (#7)
+
+
+[0.4.0] - 2019-08-04
+--------------------
+- [x] Drop Fastify in favor of custom http server
+
+
 [0.3.1] - 2018-06-21
 --------------------
 - [x] Increase code coverage

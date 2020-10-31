@@ -1,56 +1,92 @@
-const assert = require('assert');
-const {players: {bonner}, factories: {rdrn}, regions, resources} = require('@venture-api/fixtures');
+import assert from 'assert';
+import pl from '@venture-api/fixtures/fixtures/players.js';
+import fc from '@venture-api/fixtures/fixtures/facilities.js';
+import rs from '@venture-api/fixtures/fixtures/resources.js';
+import rg from '@venture-api/fixtures/fixtures/regions.js';
+import w  from '@venture-api/fixtures/dictionary/words.js';
+import t from '@venture-api/fixtures/dictionary/topics.js';
 
 
-module.exports = (tasu) => {
+export default function (tasu) {
 
     tasu.listen('mold.status', () => {
-        return {status: 'ok', id: 'MOLD-001'}
+        return { status: 'ok', id: 'MOLD-001' }
     });
 
-    tasu.listen('player.identify', ({email}) => {
-        assert(email);
+    tasu.listen(t.signToken, () => {
+        return 'FAKEJWT';
+    });
+
+    tasu.listen(t.verifyToken, (token) => {
+        console.log('> mock verifying token', token);
+
+        switch (token) {
+            case 'BADTOKEN':
+                return null;
+            case 'NOPRINCIPALTOKEN':
+                return {};
+            case 'BONNERTOKEN':
+                return { id: pl.bonner.id, type: w.player };
+            case 'RDRNTOKEN':
+                return { id: fc.rdrn.id, type: w.facility }
+        }
+    });
+
+    tasu.listen(t.identify, ({ email, id, code }) => {
+
+        if (email) {
+            return null;
+        }
+
+        switch (id) {
+            case pl.bonner.id:
+                return pl.bonner;
+            case fc.rdrn.id:
+                return fc.rdrn;
+            case fc.boex.id:
+                return fc.boex;
+        }
+
+        if (code === fc.rdrn.code)
+            return null;
+
         return null;
+
     });
 
-    tasu.listen('player.get', ({id}) => {
-        assert(id);
-        bonner.id = id;
-        return bonner;
-    });
-
-    tasu.listen('factory.get', ({id}) => {
-        assert(id);
-        if (id === rdrn.id) return rdrn;
-    });
-
-    tasu.listen('region.get', ({name}) => {
+    tasu.listen(t.getRegion, ({name}) => {
         assert(name);
-        return regions[name];
+        return rg[name];
     });
 
-    tasu.listen('factory.identify', ({code}) => {
-        assert(code);
-        if (code === rdrn.code) return null;
-    });
-
-    tasu.listen('acl.can', (accessRecord) => {
+    tasu.listen(t.checkACE, (accessRecord) => {
         assert(accessRecord);
         return true;
     });
 
-    tasu.listen('player.id', ({}) => {
-        return 'PL-YSL6H3DNRON2';
+    tasu.listen(t.generateFacilityId, ({ type }) => {
+        if (type === w.mine)
+            return fc.rdrn.id
     });
 
-    tasu.listen('factory.id', ({}) => {
-        return 'FC-WTQA6GN3DK27IT-GN';
+    tasu.listen(t.generateTransportOrderId, () => {
+            return 'TO-GTXGA787IFAAFKBDBJ';
     });
 
-    tasu.listen('resource.id', ({}) => {
-        return resources.ironOne.id;
+    tasu.listen(t.requestResourceData, ({ facilityId }) => {
+        if (facilityId === fc.rdrn.id)
+            return rs.ironOne
     });
 
+    tasu.listen(t.generateId, ({ type }) => {
 
-
+        switch (type) {
+            case w.player:
+                return pl.bonner.id;
+            case w.facility:
+                return fc.rdrn.id;
+            case w.resource:
+                return rs.ironOne.id;
+        }
+    });
 };
