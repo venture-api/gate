@@ -32,6 +32,7 @@ jobs:
           wget "https://github.com/aricart/wsgnatsd/releases/download/v0.8.4/nats-server-$NATS_VERSION-linux-amd64.zip" -O tmp.zip
           unzip tmp.zip
           mv nats-server-$NATS_VERSION-linux-amd64 nats-server
+          ./nats-server/nats-server
 
       - name: Run tests with coverage
         run: ./node_modules/.bin/c8 npm test && ./node_modules/.bin/c8 report --reporter=text-lcov | ./node_modules/.bin/coveralls
