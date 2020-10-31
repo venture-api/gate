@@ -1,7 +1,7 @@
-[0.5.0]
--------
+[0.5.0] - 2020-10-31
+--------------------
 - [x] Move to ESM (#6)
-- [ ] Move to Github Actions for CI
+- [x] Move to Github Actions for CI (#7)
 
 
 [0.4.0] - 2019-08-04
