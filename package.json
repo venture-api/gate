@@ -1,14 +1,14 @@
 {
   "name": "@venture-api/gate",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "description": "Venture API HTTP gateway service",
   "main": "main.js",
   "private": true,
   "scripts": {
     "start": "node index.js",
     "test": "mocha --experimental-json-modules",
-    "nats": "export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && gnatsd -DV",
-    "stan": "export GOPATH=$HOME/go && export PATH=$PATH:$GOPATH/bin && nats-streaming-server -p 4223 -DV"
+    "nats": "nats-server",
+    "stan": "nats-streaming-server -p 4223 -DV"
   },
   "repository": {
     "git": "git@github.com:venture-api/gate.git"
