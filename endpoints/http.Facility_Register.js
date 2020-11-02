@@ -1,8 +1,7 @@
 import httpErrors from 'http-errors';
 const { Conflict } = httpErrors;
 import facilitySchema from '@venture-api/fixtures/validation/facility.js';
-import w  from '@venture-api/fixtures/dictionary/words.js';
-import t from '@venture-api/fixtures/dictionary/topics.js';
+import { actions, keys, words as w, topics as t } from '@venture-api/fixtures/dictionary';
 
 
 export default async (gate, logger) => {
@@ -14,7 +13,7 @@ export default async (gate, logger) => {
 
         method: 'POST',
         pathname: `/${w.facilities}`,
-        access: [ 'playerId', 'create', w.facility ],
+        access: [ keys.playerId, actions.create, w.facility ],
         schema: { body: facilitySchema }
 
     }, async (req, res) => {

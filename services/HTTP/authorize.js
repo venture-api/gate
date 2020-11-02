@@ -53,6 +53,8 @@ export default async function (req, access) {
     logger.debug('authorizing', type, id, action, resource);
     const can = await tasu.request(t.checkACE, [ id, action, resource ]);
 
+
+    // TODO penalize principal (?)
     if (! can)
         throw new Forbidden('Access denied');
 

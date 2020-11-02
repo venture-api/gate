@@ -1,3 +1,8 @@
+[0.6.0]
+-------
+- [ ] Introduce `http.UOW` endpoint (#5)
+
+
 [0.5.1] - 2020-11-01
 --------------------
 - [x] Fix merge conflicts
