@@ -19,6 +19,7 @@ export default async function (req, access) {
 
     const [ gate, logger ] = this;
     const { tasu } = gate.state;
+    const { ACL } = gate.services;
 
     if (! req.headers.authorization)
         throw new BadRequest('No authorization header');
@@ -51,12 +52,12 @@ export default async function (req, access) {
     }
 
     logger.debug('authorizing', type, id, action, resource);
-    const can = await tasu.request(t.checkACE, [ id, action, resource ]);
+    const [ can, reason ] = await ACL.check(id, action, resource);
 
 
     // TODO penalize principal (?)
     if (! can)
-        throw new Forbidden('Access denied');
+        throw new Forbidden(reason || 'Access denied');
 
     // fetch & attach authorized principal
     req.principalId = id;
