@@ -39,7 +39,7 @@ export default async function () {
 
     await gate.ready();
 
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
     gate.set('httpServer', await HTTP.listen());
 
     return gate;

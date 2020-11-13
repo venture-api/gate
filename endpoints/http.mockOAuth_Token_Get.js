@@ -3,7 +3,7 @@ import pl from '@venture-api/fixtures/fixtures/players.js';
 
 export default async (gate, logger) => {
 
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
 
     HTTP.addRoute({
 

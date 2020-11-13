@@ -6,7 +6,7 @@ import k from '@venture-api/fixtures/dictionary/keys.js';
 export default async (gate, logger)  => {
 
     const { tasu, stair } = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
 
     HTTP.addRoute({
 

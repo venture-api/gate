@@ -15,7 +15,7 @@ export default async function (req, res) {
 
     const [ gate, logger ] = this;
     const { trid } = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
 
     const { method, url } = req;
 

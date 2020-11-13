@@ -10,7 +10,7 @@ export default async function () {
 
     const [ gate, logger ] = this;
     const { trid, config: { http: { port }}} = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
 
     const serverId = trid.base();
     const server = http.createServer(HTTP.requestHandler);

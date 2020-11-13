@@ -7,7 +7,7 @@ import t from '@venture-api/fixtures/dictionary/topics.js';
 export default async (gate, logger) => {
 
     const { stair, tasu } = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
 
     HTTP.addRoute({
 

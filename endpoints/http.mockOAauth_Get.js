@@ -5,7 +5,7 @@ const { BadRequest } = httpErrors;
 export default async (gate, logger) => {
 
     const { config } = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
     const { scheme, host, port } = config.http;
 
     HTTP.addRoute({

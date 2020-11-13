@@ -8,7 +8,7 @@ import {
 
 export default async (gate, logger) => {
 
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
     const { stair } = gate.state;
 
     HTTP.addRoute({

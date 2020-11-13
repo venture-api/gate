@@ -1,7 +1,7 @@
 export default async (gate, logger) => {
 
     const { config, oauth } = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
     const { environment, http: { scheme, host, port }} = config;
     const entrypoint = `${scheme}://${host}:${port}`;
 

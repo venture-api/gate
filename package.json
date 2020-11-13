@@ -8,7 +8,10 @@
     "start": "node index.js",
     "test": "mocha --experimental-json-modules",
     "nats": "nats-server",
-    "stan": "nats-streaming-server -p 4223 -DV"
+    "stan": "nats-streaming-server -p 4223 -DV",
+    "alpha": "C:\\\"Program Files\"\\MongoDB\\Server\\4.2\\bin\\mongod --replSet rs0 --port 27017 --bind_ip localhost --dbpath C:\\mongoReplicas\\alpha --oplogSize 128",
+    "bravo": "C:\\\"Program Files\"\\MongoDB\\Server\\4.2\\bin\\mongod --replSet rs0 --port 27018 --bind_ip localhost --dbpath C:\\mongoReplicas\\bravo --oplogSize 128",
+    "delta": "C:\\\"Program Files\"\\MongoDB\\Server\\4.2\\bin\\mongod --replSet rs0 --port 27019 --bind_ip localhost --dbpath C:\\mongoReplicas\\delta --oplogSize 128"
   },
   "repository": {
     "git": "git@github.com:venture-api/gate.git"
@@ -26,8 +29,8 @@
     "coveralls": "^3.1.0",
     "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
-    "kojo": "^8.0.2",
-    "mocha": "^8.2.0",
+    "kojo": "^8.1.0",
+    "mocha": "^8.2.1",
     "nock": "^9.6.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",

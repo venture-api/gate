@@ -1,6 +1,6 @@
 export default async (gate, logger) => {
 
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
     const { tasu } = gate.state;
 
     HTTP.addRoute({

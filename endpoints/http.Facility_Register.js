@@ -1,13 +1,13 @@
 import httpErrors from 'http-errors';
 const { Conflict } = httpErrors;
-import facilitySchema from '@venture-api/fixtures/validation/facility.js';
+import facilitySchema from '@venture-api/fixtures/validation/facility';
 import { actions, keys, words as w, topics as t } from '@venture-api/fixtures/dictionary';
 
 
 export default async (gate, logger) => {
 
     const { tasu, stair } = gate.state;
-    const { HTTP } = gate.services;
+    const { HTTP } = gate.methods;
 
     HTTP.addRoute({
 

@@ -19,7 +19,7 @@ export default async function (req, access) {
 
     const [ gate, logger ] = this;
     const { tasu } = gate.state;
-    const { ACL } = gate.services;
+    const { ACL } = gate.methods;
 
     if (! req.headers.authorization)
         throw new BadRequest('No authorization header');
