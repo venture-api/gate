@@ -27,7 +27,7 @@
     "http-errors": "^1.8.0",
     "jsonwebtoken": "^8.5.1",
     "kojo": "^8.0.2",
-    "mocha": "^8.2.0",
+    "mocha": "^10.1.0",
     "nock": "^9.6.1",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
