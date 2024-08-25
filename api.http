@@ -1,0 +1,2 @@
+### 000 Status check
+GET {{base}}/status

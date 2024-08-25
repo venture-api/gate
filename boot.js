@@ -21,14 +21,14 @@ export default async function () {
     gate.set('trid', new TRID({ prefix: gate.id, length: 4 }));
 
     // Tasu
-    const tasu = new Tasu(config.tasu);
-    await tasu.connected();
-    gate.set('tasu', tasu);
+    // const tasu = new Tasu(config.tasu);
+    // await tasu.connected();
+    // gate.set('tasu', tasu);
 
     // Stair
-    const stair = new Stair(config.stair);
-    await stair.connected();
-    gate.set('stair', stair);
+    // const stair = new Stair(config.stair);
+    // await stair.connected();
+    // gate.set('stair', stair);
 
     // Simple OAuth2
     const oauth = {};
