@@ -1,7 +1,7 @@
 export default async (gate, logger) => {
 
     const { HTTP } = gate.services;
-    const { tasu } = gate.state;
+    // const { tasu } = gate.state;
 
     HTTP.addRoute({
 
@@ -10,7 +10,7 @@ export default async (gate, logger) => {
 
     }, async () => {
         logger.debug('returning status');
-        const mold = await tasu.request('mold.status', {});
-        return { mold };
+        // const mold = await tasu.request('mold.status', {});
+        return {  };
     })
 };
