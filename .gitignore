@@ -3,3 +3,4 @@ node_modules/
 .nyc_output/
 flightplan.js
 pm2.json
+http-client.private.env.json
