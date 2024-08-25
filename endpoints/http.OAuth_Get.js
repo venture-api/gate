@@ -27,3 +27,4 @@ export default async (gate, logger) => {
         res.statusCode = 302;
     })
 };
+
