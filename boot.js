@@ -1,3 +1,4 @@
+import * as path from 'node:path';
 import simpleOAuth2 from 'simple-oauth2';
 import Kojo from 'kojo';
 import configLoader from 'yt-config';
@@ -8,7 +9,7 @@ import TRID from 'trid';
 
 export default async function () {
 
-    const config = await configLoader('config.ini');
+    const config = await configLoader(path.join(process.cwd(), 'config.ini'));
 
     // Kojo
     const gate = new Kojo(config.kojo);
