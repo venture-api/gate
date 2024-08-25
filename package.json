@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "build": "node -v",
-    "start": "node index.js",
+    "start": "node api/index.js",
     "test": "mocha --experimental-json-modules",
     "nats": "nats-server",
     "stan": "nats-streaming-server -p 4223 -DV"
