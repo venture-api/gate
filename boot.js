@@ -8,7 +8,7 @@ import TRID from 'trid';
 
 export default async function () {
 
-    const config = await configLoader('../config.ini');
+    const config = await configLoader('config.ini');
 
     // Kojo
     const gate = new Kojo(config.kojo);
