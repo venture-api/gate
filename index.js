@@ -1,4 +1,4 @@
-import boot from '../boot.js';
+import boot from './boot.js';
 
 
 boot().catch(error => { throw error });

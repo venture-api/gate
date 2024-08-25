@@ -6,7 +6,7 @@
   "private": true,
   "scripts": {
     "build": "node -v",
-    "start": "node api/index.js",
+    "start": "node index.js",
     "test": "mocha --experimental-json-modules",
     "nats": "nats-server",
     "stan": "nats-streaming-server -p 4223 -DV"
@@ -15,7 +15,7 @@
     "git": "git@github.com:venture-api/gate.git"
   },
   "engines": {
-    "node": ">=20.14.0"
+    "node": "20.14.0"
   },
   "type": "module",
   "author": "Maksim Korinets",
